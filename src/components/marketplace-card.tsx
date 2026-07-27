@@ -28,7 +28,7 @@ export function MarketplaceCard({ item }: { item: MarketTentacle }) {
         <span className="font-display text-sm font-bold neon-text">{item.price}</span>
       </div>
       <button className="mt-4 w-full glitch-clip border border-primary/50 bg-primary/10 py-1.5 font-mono text-[10px] uppercase tracking-[0.24em] text-primary transition hover:bg-primary/20">
-        \u25be download tentacle
+        ▾ download tentacle
       </button>
     </div>
   );
