@@ -8,105 +8,57 @@ import { useEffect, useState } from "react";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "KRAKEN.OS // Neural Ops Deck" },
+      { title: "ОСЬМИНОГ-1 // Автономный комплекс" },
       {
         name: "description",
         content:
-          "Cyberpunk web-app deck: local head-model dispatches downloadable neural tentacles across a 2×2 workspace.",
+          "Автономный киберпанк-комплекс «ОСЬМИНОГ-1»: локальная модель-голова управляет щупальцами-инструментами.",
       },
-      { property: "og:title", content: "KRAKEN.OS // Neural Ops Deck" },
+      { property: "og:title", content: "ОСЬМИНОГ-1 // Автономный комплекс" },
       {
         property: "og:description",
         content:
-          "Web-app control deck with tentacle rail, 2×2 workspace, AgentWorld chat and 10 cyber skins.",
+          "Автономный комплекс: голова, щупальца, 2×2 рабочая зона и AgentWorld router.",
       },
     ],
   }),
   component: Index,
 });
 
-type Status = "linked" | "idle" | "syncing" | "offline";
-type Tentacle = { id: string; name: string; model: string; status: Status; load: number; glyph: string };
-
-const TENTACLES: Tentacle[] = [
-  { id: "1", name: "Kraken-Vision",  model: "llava-next-34b",   status: "linked",  load: 74, glyph: "◉" },
-  { id: "2", name: "Ink-Sable",      model: "sdxl-turbo",       status: "syncing", load: 58, glyph: "✦" },
-  { id: "3", name: "Deep-Scribe",    model: "gpt-oss-70b",      status: "linked",  load: 41, glyph: "✎" },
-  { id: "4", name: "Sonar",          model: "whisper-large-v3", status: "idle",    load: 12, glyph: "♒" },
-  { id: "5", name: "Wraith-Coder",   model: "qwen3-coder-32b",  status: "linked",  load: 88, glyph: "⌘" },
-  { id: "6", name: "Oracle",         model: "embed-mxbai-v2",   status: "syncing", load: 33, glyph: "⌬" },
-  { id: "7", name: "Voxbind",        model: "xtts-v2",          status: "linked",  load: 26, glyph: "◊" },
-  { id: "8", name: "Rift-Broker",    model: "mistral-8x22b",    status: "offline", load: 0,  glyph: "☍" },
+const TENTACLES: { id: string; label: string }[] = [
+  { id: "octopus",       label: "Осьминог" },
+  { id: "home",          label: "HOME" },
+  { id: "analysis",      label: "АНАЛИЗ" },
+  { id: "generator",     label: "ГЕНЕРАТОР" },
+  { id: "coder",         label: "ПРОГРАММИСТ" },
+  { id: "extract",       label: "🔬 ИЗВЛЕЧЕНИЕ" },
+  { id: "circuit",       label: "СХЕМОТЕХНИК" },
+  { id: "clone",         label: "КОПИРОВАНИЕ ЛИЧНОСТИ" },
+  { id: "memory",        label: "Память" },
+  { id: "webgen",        label: "Веб-генератор" },
+  { id: "all",           label: "Все" },
+  { id: "chat",          label: "Чат" },
+  { id: "webedit",       label: "Веб-редактор" },
+  { id: "slides",        label: "Презентации" },
+  { id: "officecli",     label: "💾 OfficeCLI (.pptx/.docx/.xlsx)" },
+  { id: "media",         label: "📼 МЕДИА" },
+  { id: "diffusers",     label: "✎ DIFFUSERS" },
 ];
 
-const STATUS_DOT: Record<Status, string> = {
-  linked: "bg-primary",
-  syncing: "bg-accent",
-  idle: "bg-muted-foreground",
-  offline: "bg-destructive",
-};
-
-type Pane = { id: string; title: string; kind: string; lines: string[] };
-const PANES: Pane[] = [
-  {
-    id: "bash",
-    title: "MACOS-BASH",
-    kind: "shell",
-    lines: [
-      "$ kraken link --tentacle vision",
-      "» handshake ok · 74% load",
-      "$ ./scan ./screenshots",
-      "» 12 frames parsed",
-    ],
-  },
-  {
-    id: "swe",
-    title: "SWE",
-    kind: "agent",
-    lines: [
-      "> wraith-coder :: task=refactor",
-      "  · touched 14 files",
-      "  · tests 218/218 passed",
-      "  · pushing branch feat/ink",
-    ],
-  },
-  {
-    id: "term",
-    title: "TERMINAL",
-    kind: "log",
-    lines: [
-      "[net] socket ▸ 127.0.0.1:9987",
-      "[bus] tick 0x8A3 · 22ms",
-      "[gpu] vram 18.4 / 24.0 GB",
-      "[bus] tick 0x8A4 · 21ms",
-    ],
-  },
-  {
-    id: "web",
-    title: "WEB",
-    kind: "browser",
-    lines: [
-      "◈ https://cortex.exchange/feed",
-      "· necro-face 3.4GB ★★★★★",
-      "· splicer 1.1GB ★★★★☆",
-      "· astral-ear 780MB ★★★★★",
-    ],
-  },
-];
-
-const CHAT: { who: "head" | "user"; text: string }[] = [
-  { who: "head", text: "AgentWorld на связи. Голова слушает." },
-  { who: "user", text: "Собери отчёт по скринам и озвучь." },
-  { who: "head", text: "Дёргаю Kraken-Vision → Deep-Scribe → Voxbind. 3 щупальца в ритуале." },
-  { who: "user", text: "Погнали." },
-  { who: "head", text: "Готово через ~42s. Стрим в TERMINAL." },
+const TABS = ["SETTINGS", "LAUNCHER", "MEMORY"] as const;
+const PANES = ["MACOS-BASH", "SWE", "TERMINAL", "WEB"] as const;
+const QUICK = [
+  { icon: "NEW", label: "OfficeCLI" },
+  { icon: "▤",   label: "Презентации" },
+  { icon: "◇",   label: "Веб-редактор" },
+  { icon: "✎",   label: "Diffusers" },
 ];
 
 function Index() {
   const { theme, setTheme } = useTheme();
-  const active = TENTACLES.filter((t) => t.status !== "offline").length;
-  const [selected, setSelected] = useState("1");
-  const [clock, setClock] = useState("--:--:--");
+  const [selected, setSelected] = useState("octopus");
+  const [tab, setTab] = useState<(typeof TABS)[number]>("LAUNCHER");
+  const [clock, setClock] = useState("00:00:00");
   useEffect(() => {
     const tick = () => setClock(new Date().toISOString().slice(11, 19));
     tick();
@@ -115,169 +67,209 @@ function Index() {
   }, []);
 
   return (
-    <main className="cyber-surface relative h-screen overflow-hidden flex flex-col">
-      <h1 className="sr-only">KRAKEN.OS — Neural Ops Deck</h1>
-      <div className="pointer-events-none fixed inset-0 cyber-grid animate-drift opacity-25" />
-      <div className="pointer-events-none fixed inset-0 scanlines opacity-25" />
+    <main className="cyber-surface relative h-screen overflow-hidden flex flex-col text-primary">
+      <h1 className="sr-only">ОСЬМИНОГ-1 — автономный комплекс</h1>
+      <div className="pointer-events-none fixed inset-0 cyber-grid animate-drift opacity-20" />
+      <div className="pointer-events-none fixed inset-0 scanlines opacity-20" />
 
       {/* TOP BAR */}
-      <div className="relative z-10 flex items-center gap-4 border-b border-border/60 bg-background/70 px-3 py-2 backdrop-blur">
-        <div className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-sm neon-border bg-background font-display text-sm neon-text">⌾</span>
-          <span className="font-display text-xs font-black uppercase tracking-[0.28em]">KRAKEN<span className="text-accent">.</span>OS</span>
+      <div className="relative z-10 flex items-stretch gap-2 p-2">
+        {/* Logo box */}
+        <div className="flex h-16 w-[240px] shrink-0 items-center justify-center border-2 border-primary/70 bg-background/60">
+          <span className="font-display text-3xl neon-text">⚚</span>
         </div>
-        <span className="hidden md:inline font-mono text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
-          mode: ritual · node local · head stable
-        </span>
-        <div className="ml-auto flex items-center gap-3">
-          <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-primary">▮ {active}/{TENTACLES.length} live</span>
-          <span className="font-mono text-[10px] text-muted-foreground">{clock} UTC</span>
-          <div className="flex items-center gap-1">
-            {THEMES.map((t) => (
+        {/* Status strip */}
+        <div className="flex flex-1 items-center gap-2 border-2 border-primary/70 bg-background/60 px-4">
+          <StatCell label="РЕЖИМ" value="АВТОНОМНЫЙ" />
+          <Divider />
+          <StatCell label="СТАТУС" value="РАБОТА" />
+          <Divider />
+          <StatCell label="ВРЕМЯ" value={clock} mono />
+        </div>
+        {/* Head status */}
+        <div className="hidden md:flex h-16 w-[220px] shrink-0 flex-col justify-center border-2 border-primary/70 bg-background/60 px-4">
+          <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-muted-foreground">СТАТУС</span>
+          <span className="font-display text-sm font-bold uppercase tracking-widest neon-text">Осьминог</span>
+        </div>
+        {/* Theme dots */}
+        <div className="flex h-16 items-center gap-2 border-2 border-primary/70 bg-background/60 px-4">
+          {THEMES.map((t) => {
+            const isActive = theme === t.slug;
+            return (
               <button
                 key={t.slug}
                 title={t.name}
-                onClick={() => setTheme(t.slug)}
                 aria-label={t.name}
-                className={`h-3 w-3 rounded-full border border-border/70 transition ${theme === t.slug ? "ring-2 ring-primary scale-110" : "opacity-70 hover:opacity-100"}`}
-                style={{ background: t.swatch?.[0] ?? "var(--primary)" }}
+                onClick={() => setTheme(t.slug)}
+                className={`h-5 w-5 rounded-full border-2 transition ${isActive ? "border-primary scale-110" : "border-border/60 opacity-80 hover:opacity-100"}`}
+                style={{ background: t.swatch?.[1] ?? "var(--primary)" }}
               />
-            ))}
-          </div>
-          <button className="border border-destructive/50 px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-destructive hover:bg-destructive/10">
-            power
-          </button>
+            );
+          })}
         </div>
+        {/* Power */}
+        <button
+          aria-label="power"
+          className="flex h-16 w-16 shrink-0 items-center justify-center border-2 border-primary/70 bg-background/60 font-display text-2xl neon-text hover:bg-primary/10"
+        >
+          ⏻
+        </button>
       </div>
 
       {/* WORKSPACE */}
-      <div className="relative z-10 grid flex-1 min-h-0 grid-cols-[240px_1fr_320px] gap-2 p-2">
+      <div className="relative z-10 grid flex-1 min-h-0 grid-cols-[240px_1fr_360px] gap-2 px-2 pb-2">
         {/* LEFT: tentacles */}
-        <aside className="panel glitch-clip flex flex-col overflow-hidden">
-          <div className="border-b border-border/50 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.28em] text-accent">
-            // tentacles
+        <aside className="flex flex-col overflow-hidden border-2 border-primary/70 bg-background/40">
+          <div className="border-b-2 border-primary/70 px-4 py-2 font-display text-xs font-bold uppercase tracking-[0.32em] neon-text">
+            ЩУПАЛЬЦА
           </div>
-          <ul className="flex-1 overflow-y-auto p-2 space-y-1">
-            {TENTACLES.map((t) => (
-              <li key={t.id}>
-                <button
-                  onClick={() => setSelected(t.id)}
-                  className={`group flex w-full items-center gap-2 border px-2 py-1.5 text-left transition ${
-                    selected === t.id
-                      ? "border-primary/70 bg-primary/10 text-foreground"
-                      : "border-border/50 bg-background/40 hover:border-primary/40"
-                  }`}
-                >
-                  <span className="font-display text-sm neon-text w-4 text-center">{t.glyph}</span>
-                  <span className="flex-1">
-                    <span className="block font-display text-[11px] font-bold uppercase tracking-widest">{t.name}</span>
-                    <span className="block font-mono text-[9px] text-muted-foreground">{t.model}</span>
-                  </span>
-                  <span className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT[t.status]}`} />
-                  <span className="font-mono text-[9px] text-muted-foreground w-6 text-right">{t.load}%</span>
-                </button>
-              </li>
-            ))}
+          <ul className="flex-1 overflow-y-auto p-2 space-y-2">
+            {TENTACLES.map((t) => {
+              const active = selected === t.id;
+              return (
+                <li key={t.id}>
+                  <button
+                    onClick={() => setSelected(t.id)}
+                    className={`block w-full border-2 px-3 py-2.5 text-center font-display text-[11px] font-bold uppercase tracking-widest transition ${
+                      active
+                        ? "border-primary bg-primary text-primary-foreground shadow-[0_0_18px_var(--glow)]"
+                        : "border-primary/60 bg-background/40 text-primary hover:bg-primary/10"
+                    }`}
+                  >
+                    {t.label}
+                  </button>
+                </li>
+              );
+            })}
           </ul>
-          <div className="border-t border-border/50 p-2">
-            <button className="w-full border border-primary/40 bg-primary/10 px-2 py-1.5 font-mono text-[10px] uppercase tracking-widest text-primary hover:bg-primary/20">
-              + download tentacle
-            </button>
-          </div>
         </aside>
 
-        {/* CENTER: 2x2 workspace with skull bg */}
-        <section className="panel glitch-clip relative overflow-hidden">
+        {/* CENTER */}
+        <section className="relative flex flex-col overflow-hidden border-2 border-primary/70 bg-background/40">
+          {/* Skull backdrop */}
           <img
             src={krakenSkull}
             alt=""
             aria-hidden
-            className="pointer-events-none absolute inset-0 h-full w-full object-contain opacity-20 mix-blend-luminosity animate-tentacle"
+            className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.18] mix-blend-screen"
           />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background/70" />
-          <div className="relative grid h-full grid-cols-2 grid-rows-2 gap-2 p-2">
-            {PANES.map((p) => (
-              <WorkPane key={p.id} pane={p} />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/30 via-transparent to-background/60" />
+
+          {/* header */}
+          <div className="relative z-10 flex items-center justify-between border-b-2 border-primary/70 bg-background/60 px-4 py-2">
+            <span className="font-display text-xs font-bold uppercase tracking-[0.32em] neon-text">
+              {TENTACLES.find((t) => t.id === selected)?.label ?? "ОСЬМИНОГ"}
+            </span>
+            <div className="flex items-center gap-2">
+              {TABS.map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setTab(t)}
+                  className={`flex items-center gap-2 border-2 px-3 py-1.5 font-display text-[11px] font-bold uppercase tracking-widest transition ${
+                    tab === t
+                      ? "border-primary bg-primary/20 neon-text"
+                      : "border-primary/60 bg-background/40 text-primary hover:bg-primary/10"
+                  }`}
+                >
+                  <span aria-hidden>{t === "SETTINGS" ? "⚙" : t === "LAUNCHER" ? "▤" : "🧠"}</span>
+                  <span>{t}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 2x2 */}
+          <div className="relative z-10 grid flex-1 grid-cols-2 grid-rows-2 gap-3 p-3">
+            {PANES.map((title) => (
+              <WorkPane key={title} title={title} />
+            ))}
+          </div>
+
+          {/* Quick strip */}
+          <div className="relative z-10 flex items-center gap-6 border-t-2 border-primary/70 bg-background/60 px-4 py-2 font-display text-[11px] font-bold uppercase tracking-widest">
+            {QUICK.map((q) => (
+              <button key={q.label} className="flex items-center gap-2 text-primary/90 hover:text-primary">
+                <span
+                  className={`inline-flex h-5 min-w-5 items-center justify-center rounded-sm px-1 text-[9px] ${
+                    q.icon === "NEW" ? "bg-primary text-primary-foreground" : "border border-primary/60 text-primary"
+                  }`}
+                >
+                  {q.icon}
+                </span>
+                {q.label}
+              </button>
             ))}
           </div>
         </section>
 
-        {/* RIGHT: AgentWorld chat */}
-        <aside className="panel glitch-clip flex flex-col overflow-hidden">
-          <div className="flex items-center justify-between border-b border-border/50 px-3 py-2">
-            <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-accent">// agentworld</span>
-            <span className="font-mono text-[9px] uppercase tracking-widest text-primary">● online</span>
+        {/* RIGHT: AgentWorld */}
+        <aside className="flex flex-col overflow-hidden border-2 border-primary/70 bg-background/40">
+          <div className="border-b-2 border-primary/70 bg-background/60 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.28em]">
+            <span className="text-primary">ONLINE</span>{" "}
+            <span className="text-muted-foreground">agentworld</span>
           </div>
-          <div className="flex-1 overflow-y-auto space-y-2 p-3">
-            {CHAT.map((m, i) => (
-              <div
-                key={i}
-                className={`max-w-[90%] border px-2 py-1.5 font-mono text-[11px] ${
-                  m.who === "head"
-                    ? "border-primary/40 bg-primary/10 text-foreground"
-                    : "ml-auto border-border/60 bg-background/50 text-muted-foreground"
-                }`}
-              >
-                <div className="mb-0.5 font-display text-[9px] uppercase tracking-widest text-accent">
-                  {m.who === "head" ? "kraken.head" : "operator"}
-                </div>
-                {m.text}
-              </div>
-            ))}
+          <div className="relative flex-1 overflow-hidden bg-background/70">
+            <img
+              src={krakenSkull}
+              alt=""
+              aria-hidden
+              className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.10] mix-blend-screen"
+            />
           </div>
           <form
             onSubmit={(e) => e.preventDefault()}
-            className="flex gap-1 border-t border-border/50 p-2"
+            className="flex items-center gap-2 border-t-2 border-primary/70 bg-background/60 p-2"
           >
             <input
-              placeholder="> command the head..."
-              className="flex-1 border border-border/60 bg-background/60 px-2 py-1.5 font-mono text-[11px] outline-none focus:border-primary"
+              placeholder="Спросить AgentWorld router"
+              className="flex-1 border-2 border-primary/70 bg-background/60 px-3 py-2 font-mono text-[12px] text-primary placeholder:text-primary/50 outline-none focus:border-primary"
             />
-            <button className="border border-primary/50 bg-primary/10 px-2 py-1.5 font-mono text-[10px] uppercase tracking-widest text-primary hover:bg-primary/20">
-              send
+            <button
+              aria-label="отправить"
+              className="flex h-10 w-10 items-center justify-center border-2 border-primary/70 bg-background/60 font-display text-lg neon-text hover:bg-primary/10"
+            >
+              ▸
             </button>
           </form>
         </aside>
       </div>
 
-      {/* STATUS BAR */}
-      <div className="relative z-10 flex items-center gap-4 border-t border-border/60 bg-background/70 px-3 py-1 font-mono text-[9px] uppercase tracking-[0.28em] text-muted-foreground backdrop-blur">
-        <span className="text-primary">● signal ok</span>
-        <span>skin: {THEMES.find((t) => t.slug === theme)?.name}</span>
-        <span>gpu 18.4/24.0 GB</span>
-        <span>net 127.0.0.1:9987</span>
-        <span className="ml-auto">no gods · no admins</span>
+      {/* FOOTER */}
+      <div className="relative z-10 flex items-center justify-between px-4 py-1 font-mono text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
+        <span>Автономный комплекс «ОСЬМИНОГ-1»</span>
+        <span className="text-primary/80">100% ЛОКАЛЬНО • АВТОНОМНАЯ СИСТЕМА</span>
       </div>
     </main>
   );
 }
 
-function WorkPane({ pane }: { pane: Pane }) {
+function StatCell({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
-    <div className="flex min-h-0 flex-col border border-primary/30 bg-background/70 backdrop-blur">
-      <div className="flex items-center justify-between border-b border-primary/30 bg-background/80 px-2 py-1">
-        <div className="flex items-center gap-2">
-          <span className="flex gap-1">
-            <span className="h-2 w-2 rounded-full bg-destructive/80" />
-            <span className="h-2 w-2 rounded-full bg-accent/80" />
-            <span className="h-2 w-2 rounded-full bg-primary/80" />
-          </span>
-          <span className="font-display text-[10px] font-bold uppercase tracking-widest neon-text">
-            {pane.title}
-          </span>
-        </div>
-        <span className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground">
-          {pane.kind}
-        </span>
+    <div className="flex items-baseline gap-3">
+      <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-muted-foreground">{label}</span>
+      <span
+        className={`${mono ? "font-mono" : "font-display"} text-sm font-bold uppercase tracking-[0.28em] neon-text`}
+      >
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function Divider() {
+  return <span className="h-8 w-px bg-primary/40" />;
+}
+
+function WorkPane({ title }: { title: string }) {
+  return (
+    <div className="relative flex min-h-0 flex-col border-2 border-primary/70 bg-background/40 p-3">
+      <div className="flex items-start justify-between">
+        <h2 className="font-display text-3xl font-black uppercase tracking-widest neon-text">{title}</h2>
+        <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-primary/70">IDLE</span>
       </div>
-      <div className="flex-1 overflow-auto p-2 font-mono text-[11px] leading-relaxed text-foreground/90">
-        {pane.lines.map((l, i) => (
-          <div key={i} className="whitespace-pre">
-            {l}
-          </div>
-        ))}
-        <span className="inline-block h-3 w-2 translate-y-0.5 bg-primary animate-flicker" />
-      </div>
+      <div className="mt-2 h-px w-full border-t border-dashed border-primary/50" />
+      <div className="mt-2 font-mono text-xs text-primary/80">_</div>
+      <div className="mt-3 flex-1 rounded-sm border border-primary/50 bg-background/40" />
     </div>
   );
 }
