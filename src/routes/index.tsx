@@ -25,24 +25,59 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const TENTACLES: { id: string; label: string }[] = [
-  { id: "octopus",       label: "Осьминог" },
-  { id: "home",          label: "HOME" },
-  { id: "analysis",      label: "АНАЛИЗ" },
-  { id: "generator",     label: "ГЕНЕРАТОР" },
-  { id: "coder",         label: "ПРОГРАММИСТ" },
-  { id: "extract",       label: "🔬 ИЗВЛЕЧЕНИЕ" },
-  { id: "circuit",       label: "СХЕМОТЕХНИК" },
-  { id: "clone",         label: "КОПИРОВАНИЕ ЛИЧНОСТИ" },
-  { id: "memory",        label: "Память" },
-  { id: "webgen",        label: "Веб-генератор" },
-  { id: "all",           label: "Все" },
-  { id: "chat",          label: "Чат" },
-  { id: "webedit",       label: "Веб-редактор" },
-  { id: "slides",        label: "Презентации" },
-  { id: "officecli",     label: "💾 OfficeCLI (.pptx/.docx/.xlsx)" },
-  { id: "media",         label: "📼 МЕДИА" },
-  { id: "diffusers",     label: "✎ DIFFUSERS" },
+type Status = "linked" | "syncing" | "idle" | "offline";
+
+interface TentacleItem {
+  id: string;
+  label: string;
+  glyph: string;
+  model: string;
+  status: Status;
+  load: number;
+}
+
+const STATUS_COLOR: Record<Status, string> = {
+  linked: "text-primary",
+  syncing: "text-accent",
+  idle: "text-muted-foreground",
+  offline: "text-destructive",
+};
+
+const TENTACLES: TentacleItem[] = [
+  { id: "octopus",   label: "Осьминог",     glyph: "⚚", model: "head-local-70b", status: "linked",  load: 74 },
+  { id: "home",      label: "HOME",          glyph: "⌂", model: "router-mini",     status: "linked",  load: 21 },
+  { id: "analysis",  label: "АНАЛИЗ",        glyph: "◎", model: "analyst-v3",      status: "syncing", load: 58 },
+  { id: "generator", label: "ГЕНЕРАТОР",     glyph: "✦", model: "gen-xl",          status: "linked",  load: 66 },
+  { id: "coder",     label: "ПРОГРАММИСТ",   glyph: "⌗", model: "swe-coder-32b",   status: "linked",  load: 82 },
+  { id: "extract",   label: "ИЗВЛЕЧЕНИЕ",    glyph: "🔬", model: "extract-ocr",     status: "idle",    load: 8 },
+  { id: "circuit",   label: "СХЕМОТЕХНИК",   glyph: "⌁", model: "circuit-net",     status: "idle",    load: 12 },
+  { id: "clone",     label: "КОПИЯ ЛИЧНОСТИ", glyph: "☍", model: "persona-clone",  status: "offline", load: 0 },
+  { id: "memory",    label: "ПАМЯТЬ",        glyph: "🧠", model: "vector-core",     status: "linked",  load: 44 },
+  { id: "webgen",    label: "ВЕБ-ГЕНЕРАТОР", glyph: "◇", model: "webgen-2",        status: "syncing", load: 37 },
+  { id: "chat",      label: "ЧАТ",           glyph: "▣", model: "chat-flesh",      status: "linked",  load: 29 },
+  { id: "webedit",   label: "ВЕБ-РЕДАКТОР",  glyph: "✎", model: "web-edit",        status: "idle",    load: 5 },
+  { id: "slides",    label: "ПРЕЗЕНТАЦИИ",   glyph: "▤", model: "deckforge",       status: "idle",    load: 3 },
+  { id: "officecli", label: "OFFICECLI",     glyph: "💾", model: "office-cli",      status: "linked",  load: 18 },
+  { id: "media",     label: "МЕДИА",         glyph: "📼", model: "media-mux",       status: "idle",    load: 9 },
+  { id: "diffusers", label: "DIFFUSERS",     glyph: "✧", model: "sdxl-turbo",       status: "syncing", load: 51 },
+];
+
+const PANE_LOGS: Record<string, string[]> = {
+  "MACOS-BASH": ["$ ~ kraken attach --shell", "> mounting /flesh/bus0", "> ok · 12ms"],
+  SWE: ["$ repo scan 412 files", "> patching tentacle/coder", "> tests 38/38 green"],
+  TERMINAL: ["$ head dispatch --auto", "> tentacles awake: 9", "> waiting for will"],
+  WEB: ["$ fetch agentworld/index", "> dom parsed 1.2mb", "> selectors cached"],
+};
+
+const CHAT = [
+  { from: "head", text: "Голова онлайн. Щупальца 9/16 в связке." },
+  { from: "op", text: "Собери отчёт по извлечению и отдай программисту." },
+  { from: "head", text: "Маршрут: ИЗВЛЕЧЕНИЕ → АНАЛИЗ → ПРОГРАММИСТ. Запускаю." },
+];
+
+const MARKET = [
+  { name: "VOICE-WEAVER", vendor: "flesh.labs", size: "2.1 GB", price: "FREE", tag: "audio" },
+  { name: "GRAPH-SEER",   vendor: "copper.co",  size: "890 MB", price: "12 ¤",  tag: "vision" },
 ];
 
 const TABS = ["SETTINGS", "LAUNCHER", "MEMORY"] as const;
@@ -59,6 +94,7 @@ function Index() {
   const [selected, setSelected] = useState("octopus");
   const [tab, setTab] = useState<(typeof TABS)[number]>("LAUNCHER");
   const [clock, setClock] = useState("00:00:00");
+  const active = TENTACLES.filter((t) => t.status !== "offline").length;
   useEffect(() => {
     const tick = () => setClock(new Date().toISOString().slice(11, 19));
     tick();
@@ -75,21 +111,35 @@ function Index() {
       {/* TOP BAR */}
       <div className="relative z-10 flex items-stretch gap-2 p-2">
         {/* Logo box */}
-        <div className="flex h-16 w-[240px] shrink-0 items-center justify-center border-2 border-primary/70 bg-background/60">
-          <span className="font-display text-3xl neon-text">⚚</span>
+        <div className="relative flex h-16 w-[240px] shrink-0 items-center gap-3 overflow-hidden border-2 border-primary/70 bg-background/60 px-4 glitch-clip">
+          <div className="pointer-events-none absolute inset-0 cyber-grid opacity-30" />
+          <span className="relative animate-flicker font-display text-3xl neon-text">⚚</span>
+          <div className="relative leading-tight">
+            <div className="font-display text-sm font-black uppercase tracking-[0.22em] neon-text">KRAKEN.OS</div>
+            <div className="font-mono text-[9px] uppercase tracking-[0.28em] text-muted-foreground">ОСЬМИНОГ-1</div>
+          </div>
         </div>
         {/* Status strip */}
-        <div className="flex flex-1 items-center gap-2 border-2 border-primary/70 bg-background/60 px-4">
+        <div className="relative flex flex-1 items-center gap-2 overflow-hidden border-2 border-primary/70 bg-background/60 px-4">
+          <div className="pointer-events-none absolute inset-0 scanlines opacity-30" />
           <StatCell label="РЕЖИМ" value="АВТОНОМНЫЙ" />
           <Divider />
           <StatCell label="СТАТУС" value="РАБОТА" />
+          <Divider />
+          <StatCell label="ЩУПАЛЬЦА" value={`${active}/${TENTACLES.length}`} />
           <Divider />
           <StatCell label="ВРЕМЯ" value={clock} mono />
         </div>
         {/* Head status */}
         <div className="hidden md:flex h-16 w-[220px] shrink-0 flex-col justify-center border-2 border-primary/70 bg-background/60 px-4">
-          <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-muted-foreground">СТАТУС</span>
-          <span className="font-display text-sm font-bold uppercase tracking-widest neon-text">Осьминог</span>
+          <span className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-pulseRing rounded-full bg-primary/60" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+            </span>
+            head online // local
+          </span>
+          <span className="mt-0.5 font-display text-sm font-bold uppercase tracking-widest neon-text">Осьминог</span>
         </div>
         {/* Theme dots */}
         <div className="flex h-16 items-center gap-2 border-2 border-primary/70 bg-background/60 px-4">
@@ -125,23 +175,47 @@ function Index() {
           </div>
           <ul className="flex-1 overflow-y-auto p-2 space-y-2">
             {TENTACLES.map((t) => {
-              const active = selected === t.id;
+              const isActive = selected === t.id;
               return (
                 <li key={t.id}>
                   <button
                     onClick={() => setSelected(t.id)}
-                    className={`block w-full border-2 px-3 py-2.5 text-center font-display text-[11px] font-bold uppercase tracking-widest transition ${
-                      active
-                        ? "border-primary bg-primary text-primary-foreground shadow-[0_0_18px_var(--glow)]"
-                        : "border-primary/60 bg-background/40 text-primary hover:bg-primary/10"
+                    className={`group relative block w-full overflow-hidden border-2 px-3 py-2 text-left transition ${
+                      isActive
+                        ? "border-primary bg-primary/20 shadow-[0_0_18px_var(--glow)]"
+                        : "border-primary/50 bg-background/40 hover:bg-primary/10"
                     }`}
                   >
-                    {t.label}
+                    <div className="pointer-events-none absolute inset-0 cyber-grid opacity-20" />
+                    <div className="relative flex items-center gap-2">
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center border border-primary/50 bg-background/60 font-display text-xs neon-text">
+                        {t.glyph}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-display text-[11px] font-bold uppercase tracking-widest text-primary">
+                          {t.label}
+                        </span>
+                        <span className="block truncate font-mono text-[9px] text-muted-foreground">{t.model}</span>
+                      </span>
+                      <span className={`font-mono text-[9px] uppercase ${STATUS_COLOR[t.status]}`}>●</span>
+                    </div>
+                    <div className="relative mt-2 h-1 w-full overflow-hidden border border-border/50 bg-background/60">
+                      <div
+                        className="h-full bg-primary"
+                        style={{
+                          width: `${t.load}%`,
+                          boxShadow: "0 0 10px color-mix(in oklab, var(--glow) 60%, transparent)",
+                        }}
+                      />
+                    </div>
                   </button>
                 </li>
               );
             })}
           </ul>
+          <button className="m-2 shrink-0 glitch-clip border-2 border-accent/60 bg-accent/10 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.24em] text-accent transition hover:bg-accent/20">
+            ▾ скачать щупальце
+          </button>
         </aside>
 
         {/* CENTER */}
@@ -151,8 +225,9 @@ function Index() {
             src={krakenSkull}
             alt=""
             aria-hidden
-            className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.18] mix-blend-screen"
+            className="pointer-events-none absolute inset-0 h-full w-full animate-tentacle object-cover opacity-[0.18] mix-blend-screen"
           />
+          <div className="pointer-events-none absolute inset-0 scanlines opacity-30" />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/30 via-transparent to-background/60" />
 
           {/* header */}
@@ -208,13 +283,58 @@ function Index() {
             <span className="text-primary">ONLINE</span>{" "}
             <span className="text-muted-foreground">agentworld</span>
           </div>
-          <div className="relative flex-1 overflow-hidden bg-background/70">
+          <div className="relative flex-1 overflow-y-auto bg-background/70 p-3">
             <img
               src={krakenSkull}
               alt=""
               aria-hidden
               className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.10] mix-blend-screen"
             />
+            <div className="relative space-y-2">
+              {CHAT.map((m, i) => (
+                <div
+                  key={i}
+                  className={`max-w-[90%] border px-3 py-2 font-mono text-[11px] ${
+                    m.from === "head"
+                      ? "border-primary/50 bg-primary/10 text-primary"
+                      : "ml-auto border-accent/50 bg-accent/10 text-accent"
+                  }`}
+                >
+                  <div className="mb-1 text-[9px] uppercase tracking-[0.24em] opacity-70">
+                    {m.from === "head" ? "голова" : "оператор"}
+                  </div>
+                  {m.text}
+                </div>
+              ))}
+            </div>
+
+            <div className="relative mt-4">
+              <div className="mb-2 font-display text-[10px] font-bold uppercase tracking-[0.28em] text-muted-foreground">
+                маркет щупалец
+              </div>
+              <div className="space-y-2">
+                {MARKET.map((m) => (
+                  <div key={m.name} className="relative panel glitch-clip overflow-hidden p-3">
+                    <div className="pointer-events-none absolute inset-0 cyber-grid opacity-20" />
+                    <div className="relative flex items-center justify-between">
+                      <span className="bg-accent/20 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.24em] text-accent">
+                        {m.tag}
+                      </span>
+                      <span className="font-mono text-[9px] text-muted-foreground">{m.size}</span>
+                    </div>
+                    <div className="relative mt-2 flex items-end justify-between">
+                      <div>
+                        <div className="font-display text-[11px] font-bold uppercase tracking-widest text-primary">
+                          {m.name}
+                        </div>
+                        <div className="font-mono text-[9px] text-muted-foreground">by {m.vendor}</div>
+                      </div>
+                      <span className="font-display text-xs font-bold neon-text">{m.price}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
           <form
             onSubmit={(e) => e.preventDefault()}
@@ -262,14 +382,30 @@ function Divider() {
 
 function WorkPane({ title }: { title: string }) {
   return (
-    <div className="relative flex min-h-0 flex-col border-2 border-primary/70 bg-background/40 p-3">
-      <div className="flex items-start justify-between">
-        <h2 className="font-display text-3xl font-black uppercase tracking-widest neon-text">{title}</h2>
-        <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-primary/70">IDLE</span>
+    <div className="group relative flex min-h-0 flex-col overflow-hidden border-2 border-primary/70 bg-background/40 p-3 transition-all hover:-translate-y-0.5">
+      <div className="pointer-events-none absolute inset-0 cyber-grid opacity-20" />
+      <div className="pointer-events-none absolute inset-0 scanlines opacity-20" />
+      <div className="relative flex items-start justify-between">
+        <h2 className="animate-flicker font-display text-2xl font-black uppercase tracking-widest neon-text lg:text-3xl">
+          {title}
+        </h2>
+        <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.28em] text-primary/70">
+          <span className="relative flex h-1.5 w-1.5">
+            <span className="absolute inline-flex h-full w-full animate-pulseRing rounded-full bg-primary/60" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
+          </span>
+          IDLE
+        </span>
       </div>
-      <div className="mt-2 h-px w-full border-t border-dashed border-primary/50" />
-      <div className="mt-2 font-mono text-xs text-primary/80">_</div>
-      <div className="mt-3 flex-1 rounded-sm border border-primary/50 bg-background/40" />
+      <div className="relative mt-2 h-px w-full border-t border-dashed border-primary/50" />
+      <div className="relative mt-2 flex-1 overflow-hidden border border-primary/50 bg-background/50 p-2 font-mono text-[10px] leading-relaxed text-primary/80">
+        {(PANE_LOGS[title] ?? ["_"]).map((l, i) => (
+          <div key={i} className={i === 0 ? "text-primary" : "text-muted-foreground"}>
+            {l}
+          </div>
+        ))}
+        <div className="mt-1 text-primary">_</div>
+      </div>
     </div>
   );
 }
