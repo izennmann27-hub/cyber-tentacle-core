@@ -111,8 +111,9 @@ function Index() {
       {/* TOP BAR */}
       <div className="relative z-10 flex items-stretch gap-2 p-2">
         {/* Logo box */}
-        <div className="relative flex h-16 w-[240px] shrink-0 items-center gap-3 overflow-hidden border-2 border-primary/70 bg-background/60 px-4 glitch-clip">
+        <div className="relative flex h-16 w-[240px] shrink-0 items-center gap-3 overflow-hidden border-2 border-primary/70 holo glow-edge px-4 glitch-clip">
           <div className="pointer-events-none absolute inset-0 cyber-grid opacity-30" />
+          <div className="pointer-events-none absolute -left-6 -top-8 h-24 w-24 rounded-full bg-primary/25 blur-2xl" />
           <span className="relative animate-flicker font-display text-3xl neon-text">⚚</span>
           <div className="relative leading-tight">
             <div className="font-display text-sm font-black uppercase tracking-[0.22em] neon-text">KRAKEN.OS</div>
@@ -120,8 +121,9 @@ function Index() {
           </div>
         </div>
         {/* Status strip */}
-        <div className="relative flex flex-1 items-center gap-2 overflow-hidden border-2 border-primary/70 bg-background/60 px-4">
+        <div className="relative flex flex-1 items-center gap-2 overflow-hidden border-2 border-primary/70 holo px-4">
           <div className="pointer-events-none absolute inset-0 scanlines opacity-30" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent" />
           <StatCell label="РЕЖИМ" value="АВТОНОМНЫЙ" />
           <Divider />
           <StatCell label="СТАТУС" value="РАБОТА" />
@@ -131,7 +133,8 @@ function Index() {
           <StatCell label="ВРЕМЯ" value={clock} mono />
         </div>
         {/* Head status */}
-        <div className="hidden md:flex h-16 w-[220px] shrink-0 flex-col justify-center border-2 border-primary/70 bg-background/60 px-4">
+        <div className="relative hidden md:flex h-16 w-[220px] shrink-0 flex-col justify-center overflow-hidden border-2 border-primary/70 holo px-4">
+          <div className="pointer-events-none absolute inset-0 cyber-grid opacity-20" />
           <span className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-pulseRing rounded-full bg-primary/60" />
@@ -142,7 +145,7 @@ function Index() {
           <span className="mt-0.5 font-display text-sm font-bold uppercase tracking-widest neon-text">Осьминог</span>
         </div>
         {/* Theme dots */}
-        <div className="flex h-16 items-center gap-2 border-2 border-primary/70 bg-background/60 px-4">
+        <div className="flex h-16 items-center gap-2 border-2 border-primary/70 holo px-4">
           {THEMES.map((t) => {
             const isActive = theme === t.slug;
             return (
@@ -151,7 +154,7 @@ function Index() {
                 title={t.name}
                 aria-label={t.name}
                 onClick={() => setTheme(t.slug)}
-                className={`h-5 w-5 rounded-full border-2 transition ${isActive ? "border-primary scale-110" : "border-border/60 opacity-80 hover:opacity-100"}`}
+                className={`h-5 w-5 rounded-full border-2 transition ${isActive ? "border-primary scale-110 shadow-[0_0_14px_var(--glow)]" : "border-border/60 opacity-70 hover:opacity-100 hover:scale-105"}`}
                 style={{ background: t.swatch?.[1] ?? "var(--primary)" }}
               />
             );
@@ -160,7 +163,7 @@ function Index() {
         {/* Power */}
         <button
           aria-label="power"
-          className="flex h-16 w-16 shrink-0 items-center justify-center border-2 border-primary/70 bg-background/60 font-display text-2xl neon-text hover:bg-primary/10"
+          className="flex h-16 w-16 shrink-0 items-center justify-center border-2 border-primary/70 holo font-display text-2xl neon-text transition hover:bg-primary/15 hover:shadow-[0_0_26px_var(--glow)]"
         >
           ⏻
         </button>
@@ -169,9 +172,10 @@ function Index() {
       {/* WORKSPACE */}
       <div className="relative z-10 grid flex-1 min-h-0 grid-cols-[240px_1fr_360px] gap-2 px-2 pb-2">
         {/* LEFT: tentacles */}
-        <aside className="flex flex-col overflow-hidden border-2 border-primary/70 bg-background/40">
-          <div className="border-b-2 border-primary/70 px-4 py-2 font-display text-xs font-bold uppercase tracking-[0.32em] neon-text">
+        <aside className="relative flex flex-col overflow-hidden border-2 border-primary/70 holo">
+          <div className="relative flex items-center justify-between border-b-2 border-primary/70 bg-primary/10 px-4 py-2 font-display text-xs font-bold uppercase tracking-[0.32em] neon-text">
             ЩУПАЛЬЦА
+            <span className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground">{active}/{TENTACLES.length}</span>
           </div>
           <ul className="flex-1 overflow-y-auto p-2 space-y-2">
             {TENTACLES.map((t) => {
@@ -180,13 +184,16 @@ function Index() {
                 <li key={t.id}>
                   <button
                     onClick={() => setSelected(t.id)}
-                    className={`group relative block w-full overflow-hidden border-2 px-3 py-2 text-left transition ${
+                    className={`group relative block w-full overflow-hidden border-2 px-3 py-2 text-left transition-all duration-200 hover:translate-x-0.5 ${
                       isActive
-                        ? "border-primary bg-primary/20 shadow-[0_0_18px_var(--glow)]"
-                        : "border-primary/50 bg-background/40 hover:bg-primary/10"
+                        ? "border-primary bg-primary/20 shadow-[0_0_22px_var(--glow)]"
+                        : "border-primary/40 holo hover:border-primary/80 hover:shadow-[0_0_16px_color-mix(in_oklab,var(--glow)_35%,transparent)]"
                     }`}
                   >
                     <div className="pointer-events-none absolute inset-0 cyber-grid opacity-20" />
+                    {isActive && (
+                      <span className="pointer-events-none absolute left-0 top-0 h-full w-[3px] bg-primary shadow-[0_0_12px_var(--glow)]" />
+                    )}
                     <div className="relative flex items-center gap-2">
                       <span className="flex h-7 w-7 shrink-0 items-center justify-center border border-primary/50 bg-background/60 font-display text-xs neon-text">
                         {t.glyph}
@@ -201,10 +208,10 @@ function Index() {
                     </div>
                     <div className="relative mt-2 h-1 w-full overflow-hidden border border-border/50 bg-background/60">
                       <div
-                        className="h-full bg-primary"
+                        className="h-full bg-gradient-to-r from-accent via-primary to-primary transition-all duration-700"
                         style={{
                           width: `${t.load}%`,
-                          boxShadow: "0 0 10px color-mix(in oklab, var(--glow) 60%, transparent)",
+                          boxShadow: "0 0 10px color-mix(in oklab, var(--glow) 70%, transparent)",
                         }}
                       />
                     </div>
@@ -213,7 +220,8 @@ function Index() {
               );
             })}
           </ul>
-          <button className="m-2 shrink-0 glitch-clip border-2 border-accent/60 bg-accent/10 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.24em] text-accent transition hover:bg-accent/20">
+          <button className="relative m-2 shrink-0 overflow-hidden glitch-clip border-2 border-accent/60 bg-accent/10 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.24em] text-accent transition hover:bg-accent/25">
+            <span className="pointer-events-none absolute inset-x-0 bottom-0 h-[3px] hazard opacity-60" />
             ▾ скачать щупальце
           </button>
         </aside>
