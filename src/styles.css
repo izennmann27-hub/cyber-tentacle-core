@@ -356,6 +356,47 @@
   );
 }
 
+/* Deep holographic slab used for every app surface. */
+@utility holo {
+  background:
+    radial-gradient(120% 100% at 0% 0%, color-mix(in oklab, var(--glow) 12%, transparent), transparent 60%),
+    linear-gradient(180deg, color-mix(in oklab, var(--card) 88%, transparent), color-mix(in oklab, var(--background) 96%, transparent));
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--primary) 28%, transparent),
+    inset 0 0 40px color-mix(in oklab, var(--primary) 8%, transparent),
+    0 0 18px color-mix(in oklab, var(--glow) 14%, transparent);
+  backdrop-filter: blur(6px);
+}
+/* HUD corner brackets drawn with gradients (no extra DOM). */
+@utility brackets {
+  background-image:
+    linear-gradient(var(--primary), var(--primary)), linear-gradient(var(--primary), var(--primary)),
+    linear-gradient(var(--primary), var(--primary)), linear-gradient(var(--primary), var(--primary)),
+    linear-gradient(var(--primary), var(--primary)), linear-gradient(var(--primary), var(--primary)),
+    linear-gradient(var(--primary), var(--primary)), linear-gradient(var(--primary), var(--primary));
+  background-repeat: no-repeat;
+  background-size: 14px 2px, 2px 14px, 14px 2px, 2px 14px, 14px 2px, 2px 14px, 14px 2px, 2px 14px;
+  background-position:
+    left top, left top, right top, right top,
+    left bottom, left bottom, right bottom, right bottom;
+}
+@utility glow-edge {
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--primary) 45%, transparent),
+    0 0 22px color-mix(in oklab, var(--glow) 26%, transparent);
+}
+@utility scanbeam {
+  position: relative;
+  overflow: hidden;
+}
+@utility hazard {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    color-mix(in oklab, var(--accent) 60%, transparent) 0 6px,
+    transparent 6px 12px
+  );
+}
+
 @keyframes flicker {
   0%, 100% { opacity: 1; }
   45% { opacity: 0.92; }
@@ -376,7 +417,17 @@
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-6px); }
 }
+@keyframes sweep {
+  0% { transform: translateY(-120%); }
+  100% { transform: translateY(520%); }
+}
+@keyframes breathe {
+  0%, 100% { opacity: 0.16; transform: scale(1); }
+  50% { opacity: 0.32; transform: scale(1.03); }
+}
 .animate-flicker { animation: flicker 6s infinite; }
 .animate-drift { animation: drift 12s linear infinite; }
 .animate-pulseRing { animation: pulseRing 2.6s ease-out infinite; }
 .animate-tentacle { animation: tentacleFloat 5s ease-in-out infinite; }
+.animate-sweep { animation: sweep 6s linear infinite; }
+.animate-breathe { animation: breathe 7s ease-in-out infinite; }
