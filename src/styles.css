@@ -422,8 +422,8 @@
   100% { transform: translateY(520%); }
 }
 @keyframes breathe {
-  0%, 100% { opacity: 0.16; transform: scale(1); }
-  50% { opacity: 0.32; transform: scale(1.03); }
+  0%, 100% { opacity: 0.32; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(1.03); }
 }
 .animate-flicker { animation: flicker 6s infinite; }
 .animate-drift { animation: drift 12s linear infinite; }
