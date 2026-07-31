@@ -406,9 +406,11 @@ function Divider() {
 
 function WorkPane({ title }: { title: string }) {
   return (
-    <div className="group relative flex min-h-0 flex-col overflow-hidden border-2 border-primary/70 bg-background/40 p-3 transition-all hover:-translate-y-0.5">
+    <div className="group relative flex min-h-0 flex-col overflow-hidden border-2 border-primary/70 holo p-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary hover:shadow-[0_0_28px_color-mix(in_oklab,var(--glow)_32%,transparent)]">
       <div className="pointer-events-none absolute inset-0 cyber-grid opacity-20" />
       <div className="pointer-events-none absolute inset-0 scanlines opacity-20" />
+      <div className="pointer-events-none absolute inset-1.5 brackets opacity-70" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-10 animate-sweep bg-gradient-to-b from-transparent via-primary/15 to-transparent opacity-0 group-hover:opacity-100" />
       <div className="relative flex items-start justify-between">
         <h2 className="animate-flicker font-display text-2xl font-black uppercase tracking-widest neon-text lg:text-3xl">
           {title}
@@ -421,14 +423,14 @@ function WorkPane({ title }: { title: string }) {
           IDLE
         </span>
       </div>
-      <div className="relative mt-2 h-px w-full border-t border-dashed border-primary/50" />
-      <div className="relative mt-2 flex-1 overflow-hidden border border-primary/50 bg-background/50 p-2 font-mono text-[10px] leading-relaxed text-primary/80">
+      <div className="relative mt-2 h-px w-full bg-gradient-to-r from-primary/70 via-primary/20 to-transparent" />
+      <div className="relative mt-2 flex-1 overflow-hidden border border-primary/40 bg-background/70 p-2 font-mono text-[10px] leading-relaxed text-primary/80 shadow-[inset_0_0_30px_color-mix(in_oklab,var(--primary)_8%,transparent)]">
         {(PANE_LOGS[title] ?? ["_"]).map((l, i) => (
           <div key={i} className={i === 0 ? "text-primary" : "text-muted-foreground"}>
             {l}
           </div>
         ))}
-        <div className="mt-1 text-primary">_</div>
+        <div className="mt-1 animate-flicker text-primary">▍</div>
       </div>
     </div>
   );
