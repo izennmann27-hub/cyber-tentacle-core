@@ -1,37 +1,38 @@
 export type ThemeSlug =
-  | "toxic"
-  | "magenta"
-  | "matrix"
-  | "blood"
-  | "amber"
-  | "ice"
-  | "void"
-  | "solar"
-  | "ghost"
-  | "abyss";
+  | "nightcity"
+  | "macos"
+  | "win95"
+  | "vscode"
+  | "discord"
+  | "notion"
+  | "dracula"
+  | "nord"
+  | "ubuntu"
+  | "matrix";
 
 export interface ThemeDef {
   slug: ThemeSlug;
   name: string;
   tagline: string;
   fonts: string;
+  shape: string;
   swatch: string[]; // preview swatches (bg, primary, accent, glow)
 }
 
 export const THEMES: ThemeDef[] = [
-  { slug: "toxic",   name: "TOXIC KRAKEN",   tagline: "Olive rot // reference protocol", fonts: "Orbitron / JetBrains Mono",       swatch: ["#2b2f14", "#9caf3a", "#e07a3c", "#c8d977"] },
-  { slug: "magenta", name: "NEON FLESH",     tagline: "Magenta pulse // synth veins",    fonts: "Michroma / Space Mono",           swatch: ["#1a0a1f", "#ff4fd8", "#42e6ff", "#ff8be6"] },
-  { slug: "matrix",  name: "GHOSTWIRE",      tagline: "Matrix green // signal bleed",    fonts: "Share Tech Mono",                 swatch: ["#061a10", "#39ff88", "#4bd7e6", "#7fffb2"] },
-  { slug: "blood",   name: "IRONBLOOD",      tagline: "Rust red // industrial cortex",   fonts: "Bebas Neue / IBM Plex Mono",      swatch: ["#170707", "#ff3b3b", "#ffa04b", "#ff7a7a"] },
-  { slug: "amber",   name: "AMBER TERMINAL", tagline: "CRT amber // 80s mainframe",      fonts: "VT323",                           swatch: ["#171008", "#ffb43b", "#ff7a2b", "#ffd97a"] },
-  { slug: "ice",     name: "CRYO NET",       tagline: "Ice cyan // sub-zero uplink",     fonts: "Chakra Petch / IBM Plex Mono",    swatch: ["#0b1224", "#4ec3ff", "#7ff5ea", "#a9e0ff"] },
-  { slug: "void",    name: "VOID HYMN",      tagline: "Purple abyss // deep protocol",   fonts: "Syne / Space Mono",               swatch: ["#0e0723", "#c56bff", "#ff6bd0", "#e39bff"] },
-  { slug: "solar",   name: "SOLAR FLARE",    tagline: "Orange burn // plasma routing",   fonts: "Rajdhani / JetBrains Mono",       swatch: ["#1e0f04", "#ff8a2c", "#ffde5c", "#ffb463"] },
-  { slug: "ghost",   name: "PORCELAIN",      tagline: "Light mode // clinical shell",    fonts: "Space Grotesk / IBM Plex Mono",   swatch: ["#f4f4f8", "#8a4dff", "#00c2b0", "#b47dff"] },
-  { slug: "abyss",   name: "ABYSS TEAL",     tagline: "Deep sea // hydrothermic core",   fonts: "Major Mono Display / Share Tech", swatch: ["#06181c", "#3fdcd0", "#7dff9a", "#8ff2e8"] },
+  { slug: "nightcity", name: "NIGHT CITY",  tagline: "Cyberpunk 2077 HUD // жёлтый глитч",  fonts: "Rajdhani / JetBrains Mono",      shape: "срезанные углы · без радиуса · сильное свечение", swatch: ["#0a0b0d", "#fcee0a", "#00f0ff", "#fcee0a"] },
+  { slug: "macos",     name: "AQUA GLASS",  tagline: "macOS Sonoma // матовое стекло",      fonts: "Space Grotesk / IBM Plex Mono",  shape: "радиус 16px · blur 22px · мягкая тень",           swatch: ["#1c1c1e", "#0a84ff", "#30d158", "#0a84ff"] },
+  { slug: "win95",     name: "RETRO 95",    tagline: "Windows 95 // серый пластик",         fonts: "VT323 / IBM Plex Mono",          shape: "прямые углы · жёсткая рамка · без свечения",      swatch: ["#008080", "#c0c0c0", "#000080", "#800080"] },
+  { slug: "vscode",    name: "CODE DARK+",  tagline: "VS Code // редактор кода",            fonts: "Space Grotesk / JetBrains Mono", shape: "радиус 4px · плоские панели",                     swatch: ["#1e1e1e", "#4fc1ff", "#c586c0", "#007acc"] },
+  { slug: "discord",   name: "BLURPLE",     tagline: "Discord // мессенджер",               fonts: "Space Grotesk / IBM Plex Mono",  shape: "радиус 18px · пухлые блоки",                      swatch: ["#1e1f22", "#5865f2", "#23a559", "#5865f2"] },
+  { slug: "notion",    name: "PAPER DOC",   tagline: "Notion // светлый документ",          fonts: "Space Grotesk / IBM Plex Mono",  shape: "радиус 6px · тонкие линии · light",               swatch: ["#ffffff", "#37352f", "#d9730d", "#2383e2"] },
+  { slug: "dracula",   name: "DRACULA",     tagline: "Dracula // фиолетовый терминал",      fonts: "Syne / JetBrains Mono",          shape: "радиус 10px · неон розовый",                      swatch: ["#282a36", "#bd93f9", "#ff79c6", "#50fa7b"] },
+  { slug: "nord",      name: "NORD FROST",  tagline: "Nord // северный минимал",            fonts: "Chakra Petch / IBM Plex Mono",   shape: "радиус 8px · спокойные тени",                     swatch: ["#2e3440", "#88c0d0", "#a3be8c", "#ebcb8b"] },
+  { slug: "ubuntu",    name: "UBUNTU TERM", tagline: "GNOME Terminal // баклажан + оранж",  fonts: "Share Tech Mono",                shape: "радиус 6px · скан-линии",                         swatch: ["#300a24", "#e95420", "#77bb41", "#e95420"] },
+  { slug: "matrix",    name: "MATRIX CRT",  tagline: "Зелёный фосфор // ЭЛТ-терминал",      fonts: "Major Mono Display / Share Tech",shape: "прямые углы · CRT-скан · max glow",               swatch: ["#000b04", "#00ff62", "#b9ff3d", "#00ff62"] },
 ];
 
-export const DEFAULT_THEME: ThemeSlug = "toxic";
+export const DEFAULT_THEME: ThemeSlug = "nightcity";
 
 export function applyTheme(slug: ThemeSlug) {
   if (typeof document === "undefined") return;
