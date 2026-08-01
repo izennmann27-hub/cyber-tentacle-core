@@ -468,6 +468,9 @@ function SettingsOverlay({
                 <div className="mt-2 border-t border-primary/25 pt-1.5 font-mono text-[9px] uppercase tracking-[0.18em] text-primary/70">
                   {t.fonts}
                 </div>
+                <div className="mt-1 font-mono text-[9px] lowercase tracking-[0.06em] text-muted-foreground">
+                  {t.shape}
+                </div>
               </button>
             );
           })}
