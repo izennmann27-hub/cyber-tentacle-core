@@ -144,30 +144,24 @@ function Index() {
           </span>
           <span className="mt-0.5 font-display text-sm font-bold uppercase tracking-widest neon-text">Осьминог</span>
         </div>
-        {/* Theme dots */}
-        <div className="flex h-16 items-center gap-2 border-2 border-primary/70 holo px-4">
-          {THEMES.map((t) => {
-            const isActive = theme === t.slug;
-            return (
-              <button
-                key={t.slug}
-                title={t.name}
-                aria-label={t.name}
-                onClick={() => setTheme(t.slug)}
-                className={`h-5 w-5 rounded-full border-2 transition ${isActive ? "border-primary scale-110 shadow-[0_0_14px_var(--glow)]" : "border-border/60 opacity-70 hover:opacity-100 hover:scale-105"}`}
-                style={{ background: t.swatch?.[1] ?? "var(--primary)" }}
-              />
-            );
-          })}
-        </div>
-        {/* Power */}
+        {/* Settings */}
         <button
-          aria-label="power"
+          aria-label="настройки"
+          title="Настройки"
+          onClick={() => setSettingsOpen(true)}
           className="flex h-16 w-16 shrink-0 items-center justify-center border-2 border-primary/70 holo font-display text-2xl neon-text transition hover:bg-primary/15 hover:shadow-[0_0_26px_var(--glow)]"
         >
-          ⏻
+          <Settings className="h-7 w-7 transition-transform duration-500 group-hover:rotate-90" />
         </button>
       </div>
+
+      {settingsOpen && (
+        <SettingsOverlay
+          theme={theme}
+          setTheme={setTheme}
+          onClose={() => setSettingsOpen(false)}
+        />
+      )}
 
       {/* WORKSPACE */}
       <div className="relative z-10 grid flex-1 min-h-0 grid-cols-[240px_1fr_360px] gap-2 px-2 pb-2">
