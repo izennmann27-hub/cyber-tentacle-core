@@ -44,286 +44,381 @@
   --font-mono: var(--mono-font);
 }
 
-/* Shared defaults (fall back to Toxic Kraken from the reference art). */
+/*
+ * 10 skins imitating well-known interfaces. Every theme controls colours,
+ * fonts, block geometry (--shape-radius / --shape-clip / --chip-clip),
+ * the glow colour (--glow) and glow strength (--glow-power).
+ */
+
+/* 1. NIGHT CITY — Cyberpunk 2077 HUD (default) */
 :root,
-:root[data-theme="toxic"] {
-  --radius: 0.5rem;
-  --display-font: "Orbitron", ui-sans-serif, system-ui;
-  --mono-font: "JetBrains Mono", ui-monospace, monospace;
-  --display-tracking: 0.02em;
-  --background: oklch(0.20 0.04 120);
-  --foreground: oklch(0.92 0.12 115);
-  --card: oklch(0.16 0.03 120 / 0.85);
-  --card-foreground: oklch(0.92 0.10 115);
-  --popover: oklch(0.14 0.03 120);
-  --popover-foreground: oklch(0.92 0.10 115);
-  --primary: oklch(0.78 0.18 118);
-  --primary-foreground: oklch(0.14 0.03 120);
-  --secondary: oklch(0.28 0.05 120);
-  --secondary-foreground: oklch(0.92 0.10 115);
-  --muted: oklch(0.22 0.03 120);
-  --muted-foreground: oklch(0.68 0.08 115);
-  --accent: oklch(0.62 0.22 30);
-  --accent-foreground: oklch(0.14 0.03 120);
-  --destructive: oklch(0.60 0.25 25);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.72 0.16 118 / 0.28);
-  --input: oklch(0.72 0.16 118 / 0.18);
-  --ring: oklch(0.78 0.18 118);
-  --glow: oklch(0.85 0.20 118);
-  --signal: oklch(0.70 0.24 45);
-}
-
-:root[data-theme="magenta"] {
-  --radius: 1rem;
-  --display-font: "Michroma", ui-sans-serif, system-ui;
-  --mono-font: "Space Mono", ui-monospace, monospace;
-  --display-tracking: 0.06em;
-  --background: oklch(0.14 0.04 320);
-  --foreground: oklch(0.95 0.05 330);
-  --card: oklch(0.18 0.06 320 / 0.85);
-  --card-foreground: oklch(0.95 0.05 330);
-  --popover: oklch(0.14 0.04 320);
-  --popover-foreground: oklch(0.95 0.05 330);
-  --primary: oklch(0.72 0.30 340);
-  --primary-foreground: oklch(0.12 0.03 320);
-  --secondary: oklch(0.28 0.10 300);
-  --secondary-foreground: oklch(0.95 0.05 330);
-  --muted: oklch(0.22 0.05 320);
-  --muted-foreground: oklch(0.72 0.08 320);
-  --accent: oklch(0.70 0.28 200);
-  --accent-foreground: oklch(0.12 0.03 320);
-  --destructive: oklch(0.65 0.28 20);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.72 0.30 340 / 0.30);
-  --input: oklch(0.72 0.30 340 / 0.18);
-  --ring: oklch(0.72 0.30 340);
-  --glow: oklch(0.80 0.32 340);
-  --signal: oklch(0.70 0.28 200);
-}
-
-:root[data-theme="matrix"] {
+:root[data-theme="nightcity"] {
   --radius: 0rem;
-  --display-font: "Share Tech Mono", ui-monospace, monospace;
-  --mono-font: "Share Tech Mono", ui-monospace, monospace;
-  --display-tracking: 0.12em;
-  --background: oklch(0.12 0.03 155);
-  --foreground: oklch(0.94 0.18 150);
-  --card: oklch(0.16 0.04 155 / 0.85);
-  --card-foreground: oklch(0.94 0.18 150);
-  --popover: oklch(0.12 0.03 155);
-  --popover-foreground: oklch(0.94 0.18 150);
-  --primary: oklch(0.82 0.24 150);
-  --primary-foreground: oklch(0.10 0.03 155);
-  --secondary: oklch(0.22 0.06 155);
-  --secondary-foreground: oklch(0.94 0.18 150);
-  --muted: oklch(0.20 0.04 155);
-  --muted-foreground: oklch(0.70 0.14 150);
-  --accent: oklch(0.78 0.20 195);
-  --accent-foreground: oklch(0.10 0.03 155);
-  --destructive: oklch(0.65 0.28 25);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.82 0.24 150 / 0.30);
-  --input: oklch(0.82 0.24 150 / 0.18);
-  --ring: oklch(0.82 0.24 150);
-  --glow: oklch(0.88 0.26 150);
-  --signal: oklch(0.78 0.20 195);
-}
-
-:root[data-theme="blood"] {
-  --radius: 0.125rem;
-  --display-font: "Bebas Neue", ui-sans-serif, system-ui;
-  --mono-font: "IBM Plex Mono", ui-monospace, monospace;
-  --display-tracking: 0.14em;
-  --background: oklch(0.13 0.03 20);
-  --foreground: oklch(0.94 0.06 20);
-  --card: oklch(0.17 0.05 20 / 0.85);
-  --card-foreground: oklch(0.94 0.06 20);
-  --popover: oklch(0.13 0.03 20);
-  --popover-foreground: oklch(0.94 0.06 20);
-  --primary: oklch(0.62 0.26 25);
-  --primary-foreground: oklch(0.98 0.02 20);
-  --secondary: oklch(0.24 0.08 20);
-  --secondary-foreground: oklch(0.94 0.06 20);
-  --muted: oklch(0.20 0.05 20);
-  --muted-foreground: oklch(0.72 0.08 20);
-  --accent: oklch(0.78 0.18 60);
-  --accent-foreground: oklch(0.12 0.03 20);
-  --destructive: oklch(0.55 0.28 15);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.62 0.26 25 / 0.30);
-  --input: oklch(0.62 0.26 25 / 0.18);
-  --ring: oklch(0.62 0.26 25);
-  --glow: oklch(0.72 0.28 25);
-  --signal: oklch(0.78 0.18 60);
-}
-
-:root[data-theme="amber"] {
-  --radius: 0rem;
-  --display-font: "VT323", ui-monospace, monospace;
-  --mono-font: "VT323", ui-monospace, monospace;
-  --display-tracking: 0.06em;
-  --background: oklch(0.13 0.02 60);
-  --foreground: oklch(0.90 0.16 75);
-  --card: oklch(0.17 0.03 60 / 0.85);
-  --card-foreground: oklch(0.90 0.16 75);
-  --popover: oklch(0.13 0.02 60);
-  --popover-foreground: oklch(0.90 0.16 75);
-  --primary: oklch(0.82 0.19 75);
-  --primary-foreground: oklch(0.12 0.02 60);
-  --secondary: oklch(0.24 0.04 60);
-  --secondary-foreground: oklch(0.90 0.16 75);
-  --muted: oklch(0.20 0.03 60);
-  --muted-foreground: oklch(0.70 0.10 75);
-  --accent: oklch(0.75 0.22 40);
-  --accent-foreground: oklch(0.12 0.02 60);
-  --destructive: oklch(0.60 0.25 25);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.82 0.19 75 / 0.28);
-  --input: oklch(0.82 0.19 75 / 0.16);
-  --ring: oklch(0.82 0.19 75);
-  --glow: oklch(0.88 0.20 78);
-  --signal: oklch(0.75 0.22 40);
-}
-
-:root[data-theme="ice"] {
-  --radius: 0.75rem;
-  --display-font: "Chakra Petch", ui-sans-serif, system-ui;
-  --mono-font: "IBM Plex Mono", ui-monospace, monospace;
-  --display-tracking: 0.05em;
-  --background: oklch(0.14 0.03 240);
-  --foreground: oklch(0.94 0.05 225);
-  --card: oklch(0.18 0.05 240 / 0.85);
-  --card-foreground: oklch(0.94 0.05 225);
-  --popover: oklch(0.14 0.03 240);
-  --popover-foreground: oklch(0.94 0.05 225);
-  --primary: oklch(0.80 0.18 225);
-  --primary-foreground: oklch(0.12 0.03 240);
-  --secondary: oklch(0.26 0.06 240);
-  --secondary-foreground: oklch(0.94 0.05 225);
-  --muted: oklch(0.22 0.04 240);
-  --muted-foreground: oklch(0.72 0.08 225);
-  --accent: oklch(0.85 0.15 190);
-  --accent-foreground: oklch(0.12 0.03 240);
-  --destructive: oklch(0.65 0.26 20);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.80 0.18 225 / 0.30);
-  --input: oklch(0.80 0.18 225 / 0.16);
-  --ring: oklch(0.80 0.18 225);
-  --glow: oklch(0.88 0.20 220);
-  --signal: oklch(0.85 0.15 190);
-}
-
-:root[data-theme="void"] {
-  --radius: 1.5rem;
-  --display-font: "Syne", ui-sans-serif, system-ui;
-  --mono-font: "Space Mono", ui-monospace, monospace;
-  --display-tracking: 0.01em;
-  --background: oklch(0.10 0.04 290);
-  --foreground: oklch(0.94 0.06 290);
-  --card: oklch(0.15 0.06 290 / 0.85);
-  --card-foreground: oklch(0.94 0.06 290);
-  --popover: oklch(0.10 0.04 290);
-  --popover-foreground: oklch(0.94 0.06 290);
-  --primary: oklch(0.70 0.28 300);
-  --primary-foreground: oklch(0.10 0.04 290);
-  --secondary: oklch(0.25 0.09 290);
-  --secondary-foreground: oklch(0.94 0.06 290);
-  --muted: oklch(0.20 0.06 290);
-  --muted-foreground: oklch(0.72 0.10 290);
-  --accent: oklch(0.75 0.24 340);
-  --accent-foreground: oklch(0.10 0.04 290);
-  --destructive: oklch(0.65 0.28 15);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.70 0.28 300 / 0.30);
-  --input: oklch(0.70 0.28 300 / 0.18);
-  --ring: oklch(0.70 0.28 300);
-  --glow: oklch(0.78 0.30 300);
-  --signal: oklch(0.75 0.24 340);
-}
-
-:root[data-theme="solar"] {
-  --radius: 0.25rem;
   --display-font: "Rajdhani", ui-sans-serif, system-ui;
   --mono-font: "JetBrains Mono", ui-monospace, monospace;
-  --display-tracking: 0.1em;
-  --background: oklch(0.15 0.03 45);
-  --foreground: oklch(0.94 0.14 80);
-  --card: oklch(0.19 0.04 45 / 0.85);
-  --card-foreground: oklch(0.94 0.14 80);
-  --popover: oklch(0.15 0.03 45);
-  --popover-foreground: oklch(0.94 0.14 80);
-  --primary: oklch(0.75 0.24 55);
-  --primary-foreground: oklch(0.12 0.03 45);
-  --secondary: oklch(0.26 0.06 45);
-  --secondary-foreground: oklch(0.94 0.14 80);
-  --muted: oklch(0.22 0.04 45);
-  --muted-foreground: oklch(0.72 0.09 60);
-  --accent: oklch(0.85 0.18 95);
-  --accent-foreground: oklch(0.12 0.03 45);
-  --destructive: oklch(0.60 0.26 25);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.75 0.24 55 / 0.30);
-  --input: oklch(0.75 0.24 55 / 0.18);
-  --ring: oklch(0.75 0.24 55);
-  --glow: oklch(0.82 0.26 60);
-  --signal: oklch(0.85 0.18 95);
+  --display-tracking: 0.12em;
+  --shape-radius: 0px;
+  --shape-clip: polygon(0 10px, 10px 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+  --chip-clip: polygon(0 8px, 8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+  --panel-blur: 6px;
+  --glow-power: 1;
+  --bracket-opacity: 0.8;
+  --scan-opacity: 1;
+  --border-width: 2px;
+  --background: #0a0b0d;
+  --foreground: #f2f6a0;
+  --card: color-mix(in srgb, #14161a 85%, transparent);
+  --card-foreground: #f2f6a0;
+  --popover: #0d0f12;
+  --popover-foreground: #f2f6a0;
+  --primary: #fcee0a;
+  --primary-foreground: #0a0b0d;
+  --secondary: #1b2026;
+  --secondary-foreground: #f2f6a0;
+  --muted: #16191e;
+  --muted-foreground: #9aa38c;
+  --accent: #00f0ff;
+  --accent-foreground: #05070a;
+  --destructive: #ff2e56;
+  --destructive-foreground: #ffffff;
+  --border: color-mix(in srgb, #fcee0a 34%, transparent);
+  --input: color-mix(in srgb, #fcee0a 18%, transparent);
+  --ring: #fcee0a;
+  --glow: #fcee0a;
+  --signal: #00f0ff;
 }
 
-:root[data-theme="ghost"] {
-  --radius: 1.25rem;
+/* 2. AQUA GLASS — macOS Sonoma */
+:root[data-theme="macos"] {
+  --radius: 0.9rem;
+  --display-font: "Space Grotesk", ui-sans-serif, system-ui;
+  --mono-font: "IBM Plex Mono", ui-monospace, monospace;
+  --display-tracking: -0.01em;
+  --shape-radius: 16px;
+  --shape-clip: none;
+  --chip-clip: none;
+  --panel-blur: 22px;
+  --glow-power: 0.35;
+  --bracket-opacity: 0;
+  --scan-opacity: 0;
+  --border-width: 1px;
+  --background: #1c1c1e;
+  --foreground: #f5f5f7;
+  --card: color-mix(in srgb, #2c2c2e 72%, transparent);
+  --card-foreground: #f5f5f7;
+  --popover: #2c2c2e;
+  --popover-foreground: #f5f5f7;
+  --primary: #0a84ff;
+  --primary-foreground: #ffffff;
+  --secondary: #3a3a3c;
+  --secondary-foreground: #f5f5f7;
+  --muted: #2c2c2e;
+  --muted-foreground: #a1a1a6;
+  --accent: #30d158;
+  --accent-foreground: #06210f;
+  --destructive: #ff453a;
+  --destructive-foreground: #ffffff;
+  --border: color-mix(in srgb, #ffffff 14%, transparent);
+  --input: color-mix(in srgb, #ffffff 10%, transparent);
+  --ring: #0a84ff;
+  --glow: #0a84ff;
+  --signal: #30d158;
+}
+
+/* 3. RETRO 95 — Windows 95 */
+:root[data-theme="win95"] {
+  --radius: 0rem;
+  --display-font: "VT323", ui-monospace, monospace;
+  --mono-font: "IBM Plex Mono", ui-monospace, monospace;
+  --display-tracking: 0.02em;
+  --shape-radius: 0px;
+  --shape-clip: none;
+  --chip-clip: none;
+  --panel-blur: 0px;
+  --glow-power: 0;
+  --bracket-opacity: 0;
+  --scan-opacity: 0;
+  --border-width: 2px;
+  --background: #008080;
+  --foreground: #101010;
+  --card: #c0c0c0;
+  --card-foreground: #101010;
+  --popover: #c0c0c0;
+  --popover-foreground: #101010;
+  --primary: #000080;
+  --primary-foreground: #ffffff;
+  --secondary: #dfdfdf;
+  --secondary-foreground: #101010;
+  --muted: #b3b3b3;
+  --muted-foreground: #3f3f3f;
+  --accent: #800080;
+  --accent-foreground: #ffffff;
+  --destructive: #a80000;
+  --destructive-foreground: #ffffff;
+  --border: #6e6e6e;
+  --input: #ffffff;
+  --ring: #000080;
+  --glow: #000080;
+  --signal: #800080;
+}
+
+/* 4. CODE DARK+ — VS Code */
+:root[data-theme="vscode"] {
+  --radius: 0.25rem;
+  --display-font: "Space Grotesk", ui-sans-serif, system-ui;
+  --mono-font: "JetBrains Mono", ui-monospace, monospace;
+  --display-tracking: 0.01em;
+  --shape-radius: 4px;
+  --shape-clip: none;
+  --chip-clip: none;
+  --panel-blur: 0px;
+  --glow-power: 0.25;
+  --bracket-opacity: 0;
+  --scan-opacity: 0;
+  --border-width: 1px;
+  --background: #1e1e1e;
+  --foreground: #d4d4d4;
+  --card: #252526;
+  --card-foreground: #d4d4d4;
+  --popover: #252526;
+  --popover-foreground: #d4d4d4;
+  --primary: #4fc1ff;
+  --primary-foreground: #0b1a24;
+  --secondary: #333333;
+  --secondary-foreground: #d4d4d4;
+  --muted: #2d2d2d;
+  --muted-foreground: #858585;
+  --accent: #c586c0;
+  --accent-foreground: #1e1e1e;
+  --destructive: #f14c4c;
+  --destructive-foreground: #ffffff;
+  --border: #3c3c3c;
+  --input: #3c3c3c;
+  --ring: #007acc;
+  --glow: #007acc;
+  --signal: #ce9178;
+}
+
+/* 5. BLURPLE — Discord */
+:root[data-theme="discord"] {
+  --radius: 1rem;
   --display-font: "Space Grotesk", ui-sans-serif, system-ui;
   --mono-font: "IBM Plex Mono", ui-monospace, monospace;
   --display-tracking: 0em;
-  --background: oklch(0.96 0.01 250);
-  --foreground: oklch(0.18 0.04 260);
-  --card: oklch(1 0 0 / 0.80);
-  --card-foreground: oklch(0.18 0.04 260);
-  --popover: oklch(0.98 0 0);
-  --popover-foreground: oklch(0.18 0.04 260);
-  --primary: oklch(0.55 0.28 300);
-  --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.90 0.02 250);
-  --secondary-foreground: oklch(0.18 0.04 260);
-  --muted: oklch(0.92 0.02 250);
-  --muted-foreground: oklch(0.42 0.06 260);
-  --accent: oklch(0.65 0.26 190);
-  --accent-foreground: oklch(0.98 0 0);
-  --destructive: oklch(0.55 0.28 20);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.55 0.28 300 / 0.28);
-  --input: oklch(0.55 0.28 300 / 0.14);
-  --ring: oklch(0.55 0.28 300);
-  --glow: oklch(0.70 0.30 300);
-  --signal: oklch(0.65 0.26 190);
+  --shape-radius: 18px;
+  --shape-clip: none;
+  --chip-clip: none;
+  --panel-blur: 0px;
+  --glow-power: 0.3;
+  --bracket-opacity: 0;
+  --scan-opacity: 0;
+  --border-width: 1px;
+  --background: #1e1f22;
+  --foreground: #dbdee1;
+  --card: #313338;
+  --card-foreground: #f2f3f5;
+  --popover: #2b2d31;
+  --popover-foreground: #f2f3f5;
+  --primary: #5865f2;
+  --primary-foreground: #ffffff;
+  --secondary: #383a40;
+  --secondary-foreground: #f2f3f5;
+  --muted: #2b2d31;
+  --muted-foreground: #949ba4;
+  --accent: #23a559;
+  --accent-foreground: #ffffff;
+  --destructive: #f23f43;
+  --destructive-foreground: #ffffff;
+  --border: color-mix(in srgb, #ffffff 8%, transparent);
+  --input: #1e1f22;
+  --ring: #5865f2;
+  --glow: #5865f2;
+  --signal: #23a559;
 }
 
-:root[data-theme="abyss"] {
-  --radius: 0.375rem;
+/* 6. PAPER DOC — Notion */
+:root[data-theme="notion"] {
+  --radius: 0.4rem;
+  --display-font: "Space Grotesk", ui-sans-serif, system-ui;
+  --mono-font: "IBM Plex Mono", ui-monospace, monospace;
+  --display-tracking: -0.01em;
+  --shape-radius: 6px;
+  --shape-clip: none;
+  --chip-clip: none;
+  --panel-blur: 0px;
+  --glow-power: 0.12;
+  --bracket-opacity: 0;
+  --scan-opacity: 0;
+  --border-width: 1px;
+  --background: #ffffff;
+  --foreground: #37352f;
+  --card: #f7f6f3;
+  --card-foreground: #37352f;
+  --popover: #ffffff;
+  --popover-foreground: #37352f;
+  --primary: #2f2f2f;
+  --primary-foreground: #ffffff;
+  --secondary: #efeeec;
+  --secondary-foreground: #37352f;
+  --muted: #f1f0ee;
+  --muted-foreground: #787774;
+  --accent: #d9730d;
+  --accent-foreground: #ffffff;
+  --destructive: #e03e3e;
+  --destructive-foreground: #ffffff;
+  --border: #e3e2e0;
+  --input: #f1f0ee;
+  --ring: #2383e2;
+  --glow: #2383e2;
+  --signal: #0f7b6c;
+}
+
+/* 7. DRACULA — the classic editor theme */
+:root[data-theme="dracula"] {
+  --radius: 0.6rem;
+  --display-font: "Syne", ui-sans-serif, system-ui;
+  --mono-font: "JetBrains Mono", ui-monospace, monospace;
+  --display-tracking: 0.02em;
+  --shape-radius: 10px;
+  --shape-clip: none;
+  --chip-clip: none;
+  --panel-blur: 4px;
+  --glow-power: 0.55;
+  --bracket-opacity: 0;
+  --scan-opacity: 0;
+  --border-width: 1px;
+  --background: #282a36;
+  --foreground: #f8f8f2;
+  --card: color-mix(in srgb, #343746 88%, transparent);
+  --card-foreground: #f8f8f2;
+  --popover: #343746;
+  --popover-foreground: #f8f8f2;
+  --primary: #bd93f9;
+  --primary-foreground: #21222c;
+  --secondary: #44475a;
+  --secondary-foreground: #f8f8f2;
+  --muted: #343746;
+  --muted-foreground: #a3a7c2;
+  --accent: #ff79c6;
+  --accent-foreground: #21222c;
+  --destructive: #ff5555;
+  --destructive-foreground: #21222c;
+  --border: color-mix(in srgb, #bd93f9 30%, transparent);
+  --input: #44475a;
+  --ring: #bd93f9;
+  --glow: #ff79c6;
+  --signal: #50fa7b;
+}
+
+/* 8. NORD FROST — Nord palette */
+:root[data-theme="nord"] {
+  --radius: 0.5rem;
+  --display-font: "Chakra Petch", ui-sans-serif, system-ui;
+  --mono-font: "IBM Plex Mono", ui-monospace, monospace;
+  --display-tracking: 0.04em;
+  --shape-radius: 8px;
+  --shape-clip: none;
+  --chip-clip: none;
+  --panel-blur: 3px;
+  --glow-power: 0.3;
+  --bracket-opacity: 0;
+  --scan-opacity: 0;
+  --border-width: 1px;
+  --background: #2e3440;
+  --foreground: #eceff4;
+  --card: #3b4252;
+  --card-foreground: #eceff4;
+  --popover: #3b4252;
+  --popover-foreground: #eceff4;
+  --primary: #88c0d0;
+  --primary-foreground: #2e3440;
+  --secondary: #434c5e;
+  --secondary-foreground: #eceff4;
+  --muted: #3b4252;
+  --muted-foreground: #9aa4b6;
+  --accent: #a3be8c;
+  --accent-foreground: #2e3440;
+  --destructive: #bf616a;
+  --destructive-foreground: #eceff4;
+  --border: #4c566a;
+  --input: #434c5e;
+  --ring: #88c0d0;
+  --glow: #88c0d0;
+  --signal: #ebcb8b;
+}
+
+/* 9. UBUNTU TERM — GNOME terminal */
+:root[data-theme="ubuntu"] {
+  --radius: 0.4rem;
+  --display-font: "Share Tech Mono", ui-monospace, monospace;
+  --mono-font: "Share Tech Mono", ui-monospace, monospace;
+  --display-tracking: 0.1em;
+  --shape-radius: 6px;
+  --shape-clip: none;
+  --chip-clip: none;
+  --panel-blur: 2px;
+  --glow-power: 0.6;
+  --bracket-opacity: 0;
+  --scan-opacity: 0.5;
+  --border-width: 1px;
+  --background: #300a24;
+  --foreground: #ffd9c8;
+  --card: color-mix(in srgb, #3d1330 88%, transparent);
+  --card-foreground: #ffd9c8;
+  --popover: #3d1330;
+  --popover-foreground: #ffd9c8;
+  --primary: #e95420;
+  --primary-foreground: #2a0820;
+  --secondary: #4d1a3e;
+  --secondary-foreground: #ffd9c8;
+  --muted: #3d1330;
+  --muted-foreground: #c39cb4;
+  --accent: #aea79f;
+  --accent-foreground: #2a0820;
+  --destructive: #d33682;
+  --destructive-foreground: #ffffff;
+  --border: color-mix(in srgb, #e95420 40%, transparent);
+  --input: color-mix(in srgb, #e95420 18%, transparent);
+  --ring: #e95420;
+  --glow: #e95420;
+  --signal: #77bb41;
+}
+
+/* 10. MATRIX CRT — green phosphor terminal */
+:root[data-theme="matrix"] {
+  --radius: 0rem;
   --display-font: "Major Mono Display", ui-monospace, monospace;
   --mono-font: "Share Tech Mono", ui-monospace, monospace;
-  --display-tracking: 0.08em;
-  --background: oklch(0.13 0.03 200);
-  --foreground: oklch(0.94 0.10 190);
-  --card: oklch(0.17 0.05 200 / 0.85);
-  --card-foreground: oklch(0.94 0.10 190);
-  --popover: oklch(0.13 0.03 200);
-  --popover-foreground: oklch(0.94 0.10 190);
-  --primary: oklch(0.78 0.18 195);
-  --primary-foreground: oklch(0.10 0.03 200);
-  --secondary: oklch(0.24 0.06 200);
-  --secondary-foreground: oklch(0.94 0.10 190);
-  --muted: oklch(0.20 0.04 200);
-  --muted-foreground: oklch(0.70 0.10 190);
-  --accent: oklch(0.72 0.24 160);
-  --accent-foreground: oklch(0.10 0.03 200);
-  --destructive: oklch(0.60 0.26 20);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.78 0.18 195 / 0.28);
-  --input: oklch(0.78 0.18 195 / 0.16);
-  --ring: oklch(0.78 0.18 195);
-  --glow: oklch(0.86 0.20 190);
-  --signal: oklch(0.72 0.24 160);
+  --display-tracking: 0.16em;
+  --shape-radius: 0px;
+  --shape-clip: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  --chip-clip: none;
+  --panel-blur: 0px;
+  --glow-power: 1.2;
+  --bracket-opacity: 0.5;
+  --scan-opacity: 1.4;
+  --border-width: 1px;
+  --background: #000b04;
+  --foreground: #7dffa6;
+  --card: color-mix(in srgb, #04180c 88%, transparent);
+  --card-foreground: #7dffa6;
+  --popover: #04180c;
+  --popover-foreground: #7dffa6;
+  --primary: #00ff62;
+  --primary-foreground: #001a08;
+  --secondary: #0b2c16;
+  --secondary-foreground: #7dffa6;
+  --muted: #072010;
+  --muted-foreground: #4fbf7c;
+  --accent: #b9ff3d;
+  --accent-foreground: #001a08;
+  --destructive: #ff4d4d;
+  --destructive-foreground: #001a08;
+  --border: color-mix(in srgb, #00ff62 36%, transparent);
+  --input: color-mix(in srgb, #00ff62 16%, transparent);
+  --ring: #00ff62;
+  --glow: #00ff62;
+  --signal: #b9ff3d;
 }
 
 @layer base {
@@ -359,6 +454,7 @@
   mask-image: radial-gradient(ellipse at center, black 40%, transparent 85%);
 }
 @utility scanlines {
+  opacity: var(--scan-opacity, 1);
   background-image: repeating-linear-gradient(
     0deg,
     color-mix(in oklab, var(--foreground) 6%, transparent) 0 1px,
@@ -370,8 +466,8 @@
 @utility neon-text {
   color: var(--primary);
   text-shadow:
-    0 0 6px color-mix(in oklab, var(--glow) 60%, transparent),
-    0 0 22px color-mix(in oklab, var(--glow) 30%, transparent);
+    0 0 calc(6px * var(--glow-power, 1)) color-mix(in oklab, var(--glow) calc(60% * var(--glow-power, 1)), transparent),
+    0 0 calc(22px * var(--glow-power, 1)) color-mix(in oklab, var(--glow) calc(30% * var(--glow-power, 1)), transparent);
 }
 @utility neon-border {
   border: 1px solid color-mix(in oklab, var(--primary) 60%, transparent);
@@ -380,34 +476,37 @@
     0 0 24px color-mix(in oklab, var(--glow) 22%, transparent);
 }
 @utility panel {
+  border-radius: var(--shape-radius, 0px);
+  clip-path: var(--shape-clip, none);
   background: linear-gradient(
     180deg,
     color-mix(in oklab, var(--card) 92%, transparent),
     color-mix(in oklab, var(--background) 92%, transparent)
   );
   border: 1px solid color-mix(in oklab, var(--primary) 30%, transparent);
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(var(--panel-blur, 6px));
 }
 @utility glitch-clip {
-  clip-path: polygon(
-    0 8px, 12px 0, calc(100% - 24px) 0, 100% 16px,
-    100% calc(100% - 8px), calc(100% - 12px) 100%, 24px 100%, 0 calc(100% - 16px)
-  );
+  clip-path: var(--chip-clip, none);
+  border-radius: var(--shape-radius, 0px);
 }
 
 /* Deep holographic slab used for every app surface. */
 @utility holo {
+  border-radius: var(--shape-radius, 0px);
+  clip-path: var(--shape-clip, none);
   background:
     radial-gradient(120% 100% at 0% 0%, color-mix(in oklab, var(--glow) 12%, transparent), transparent 60%),
     linear-gradient(180deg, color-mix(in oklab, var(--card) 88%, transparent), color-mix(in oklab, var(--background) 96%, transparent));
   box-shadow:
-    inset 0 1px 0 color-mix(in oklab, var(--primary) 28%, transparent),
-    inset 0 0 40px color-mix(in oklab, var(--primary) 8%, transparent),
-    0 0 18px color-mix(in oklab, var(--glow) 14%, transparent);
-  backdrop-filter: blur(6px);
+    inset 0 1px 0 color-mix(in oklab, var(--primary) calc(28% * var(--glow-power, 1)), transparent),
+    inset 0 0 40px color-mix(in oklab, var(--primary) calc(8% * var(--glow-power, 1)), transparent),
+    0 0 calc(18px * var(--glow-power, 1)) color-mix(in oklab, var(--glow) calc(18% * var(--glow-power, 1)), transparent);
+  backdrop-filter: blur(var(--panel-blur, 6px));
 }
 /* HUD corner brackets drawn with gradients (no extra DOM). */
 @utility brackets {
+  opacity: var(--bracket-opacity, 1);
   background-image:
     linear-gradient(var(--primary), var(--primary)), linear-gradient(var(--primary), var(--primary)),
     linear-gradient(var(--primary), var(--primary)), linear-gradient(var(--primary), var(--primary)),
@@ -422,7 +521,7 @@
 @utility glow-edge {
   box-shadow:
     0 0 0 1px color-mix(in oklab, var(--primary) 45%, transparent),
-    0 0 22px color-mix(in oklab, var(--glow) 26%, transparent);
+    0 0 calc(22px * var(--glow-power, 1)) color-mix(in oklab, var(--glow) calc(30% * var(--glow-power, 1)), transparent);
 }
 @utility scanbeam {
   position: relative;
