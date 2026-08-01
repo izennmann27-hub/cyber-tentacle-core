@@ -40,14 +40,17 @@
   --color-ring-offset-background: var(--background);
   --color-glow: var(--glow);
   --color-signal: var(--signal);
-  --font-display: "Orbitron", "Space Grotesk", ui-sans-serif, system-ui;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-display: var(--display-font);
+  --font-mono: var(--mono-font);
 }
 
 /* Shared defaults (fall back to Toxic Kraken from the reference art). */
 :root,
 :root[data-theme="toxic"] {
   --radius: 0.5rem;
+  --display-font: "Orbitron", ui-sans-serif, system-ui;
+  --mono-font: "JetBrains Mono", ui-monospace, monospace;
+  --display-tracking: 0.02em;
   --background: oklch(0.20 0.04 120);
   --foreground: oklch(0.92 0.12 115);
   --card: oklch(0.16 0.03 120 / 0.85);
@@ -72,6 +75,10 @@
 }
 
 :root[data-theme="magenta"] {
+  --radius: 1rem;
+  --display-font: "Michroma", ui-sans-serif, system-ui;
+  --mono-font: "Space Mono", ui-monospace, monospace;
+  --display-tracking: 0.06em;
   --background: oklch(0.14 0.04 320);
   --foreground: oklch(0.95 0.05 330);
   --card: oklch(0.18 0.06 320 / 0.85);
@@ -96,6 +103,10 @@
 }
 
 :root[data-theme="matrix"] {
+  --radius: 0rem;
+  --display-font: "Share Tech Mono", ui-monospace, monospace;
+  --mono-font: "Share Tech Mono", ui-monospace, monospace;
+  --display-tracking: 0.12em;
   --background: oklch(0.12 0.03 155);
   --foreground: oklch(0.94 0.18 150);
   --card: oklch(0.16 0.04 155 / 0.85);
@@ -120,6 +131,10 @@
 }
 
 :root[data-theme="blood"] {
+  --radius: 0.125rem;
+  --display-font: "Bebas Neue", ui-sans-serif, system-ui;
+  --mono-font: "IBM Plex Mono", ui-monospace, monospace;
+  --display-tracking: 0.14em;
   --background: oklch(0.13 0.03 20);
   --foreground: oklch(0.94 0.06 20);
   --card: oklch(0.17 0.05 20 / 0.85);
@@ -144,6 +159,10 @@
 }
 
 :root[data-theme="amber"] {
+  --radius: 0rem;
+  --display-font: "VT323", ui-monospace, monospace;
+  --mono-font: "VT323", ui-monospace, monospace;
+  --display-tracking: 0.06em;
   --background: oklch(0.13 0.02 60);
   --foreground: oklch(0.90 0.16 75);
   --card: oklch(0.17 0.03 60 / 0.85);
@@ -168,6 +187,10 @@
 }
 
 :root[data-theme="ice"] {
+  --radius: 0.75rem;
+  --display-font: "Chakra Petch", ui-sans-serif, system-ui;
+  --mono-font: "IBM Plex Mono", ui-monospace, monospace;
+  --display-tracking: 0.05em;
   --background: oklch(0.14 0.03 240);
   --foreground: oklch(0.94 0.05 225);
   --card: oklch(0.18 0.05 240 / 0.85);
@@ -192,6 +215,10 @@
 }
 
 :root[data-theme="void"] {
+  --radius: 1.5rem;
+  --display-font: "Syne", ui-sans-serif, system-ui;
+  --mono-font: "Space Mono", ui-monospace, monospace;
+  --display-tracking: 0.01em;
   --background: oklch(0.10 0.04 290);
   --foreground: oklch(0.94 0.06 290);
   --card: oklch(0.15 0.06 290 / 0.85);
@@ -216,6 +243,10 @@
 }
 
 :root[data-theme="solar"] {
+  --radius: 0.25rem;
+  --display-font: "Rajdhani", ui-sans-serif, system-ui;
+  --mono-font: "JetBrains Mono", ui-monospace, monospace;
+  --display-tracking: 0.1em;
   --background: oklch(0.15 0.03 45);
   --foreground: oklch(0.94 0.14 80);
   --card: oklch(0.19 0.04 45 / 0.85);
@@ -240,6 +271,10 @@
 }
 
 :root[data-theme="ghost"] {
+  --radius: 1.25rem;
+  --display-font: "Space Grotesk", ui-sans-serif, system-ui;
+  --mono-font: "IBM Plex Mono", ui-monospace, monospace;
+  --display-tracking: 0em;
   --background: oklch(0.96 0.01 250);
   --foreground: oklch(0.18 0.04 260);
   --card: oklch(1 0 0 / 0.80);
@@ -264,6 +299,10 @@
 }
 
 :root[data-theme="abyss"] {
+  --radius: 0.375rem;
+  --display-font: "Major Mono Display", ui-monospace, monospace;
+  --mono-font: "Share Tech Mono", ui-monospace, monospace;
+  --display-tracking: 0.08em;
   --background: oklch(0.13 0.03 200);
   --foreground: oklch(0.94 0.10 190);
   --card: oklch(0.17 0.05 200 / 0.85);
@@ -299,7 +338,7 @@
   }
   h1, h2, h3, h4 {
     font-family: var(--font-display);
-    letter-spacing: 0.02em;
+    letter-spacing: var(--display-tracking, 0.02em);
   }
 }
 

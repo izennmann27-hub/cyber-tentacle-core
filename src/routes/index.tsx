@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useTheme } from "@/hooks/use-theme";
-import { THEMES } from "@/lib/themes";
+import { THEMES, type ThemeSlug } from "@/lib/themes";
+import { Settings, X } from "lucide-react";
 import krakenSkullAsset from "@/assets/kraken-skull.png.asset.json";
 const krakenSkull = krakenSkullAsset.url;
 import { useEffect, useState } from "react";
@@ -93,6 +94,7 @@ function Index() {
   const { theme, setTheme } = useTheme();
   const [selected, setSelected] = useState("octopus");
   const [tab, setTab] = useState<(typeof TABS)[number]>("LAUNCHER");
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [clock, setClock] = useState("00:00:00");
   const active = TENTACLES.filter((t) => t.status !== "offline").length;
   useEffect(() => {
@@ -144,30 +146,24 @@ function Index() {
           </span>
           <span className="mt-0.5 font-display text-sm font-bold uppercase tracking-widest neon-text">Осьминог</span>
         </div>
-        {/* Theme dots */}
-        <div className="flex h-16 items-center gap-2 border-2 border-primary/70 holo px-4">
-          {THEMES.map((t) => {
-            const isActive = theme === t.slug;
-            return (
-              <button
-                key={t.slug}
-                title={t.name}
-                aria-label={t.name}
-                onClick={() => setTheme(t.slug)}
-                className={`h-5 w-5 rounded-full border-2 transition ${isActive ? "border-primary scale-110 shadow-[0_0_14px_var(--glow)]" : "border-border/60 opacity-70 hover:opacity-100 hover:scale-105"}`}
-                style={{ background: t.swatch?.[1] ?? "var(--primary)" }}
-              />
-            );
-          })}
-        </div>
-        {/* Power */}
+        {/* Settings */}
         <button
-          aria-label="power"
+          aria-label="настройки"
+          title="Настройки"
+          onClick={() => setSettingsOpen(true)}
           className="flex h-16 w-16 shrink-0 items-center justify-center border-2 border-primary/70 holo font-display text-2xl neon-text transition hover:bg-primary/15 hover:shadow-[0_0_26px_var(--glow)]"
         >
-          ⏻
+          <Settings className="h-7 w-7 transition-transform duration-500 group-hover:rotate-90" />
         </button>
       </div>
+
+      {settingsOpen && (
+        <SettingsOverlay
+          theme={theme}
+          setTheme={setTheme}
+          onClose={() => setSettingsOpen(false)}
+        />
+      )}
 
       {/* WORKSPACE */}
       <div className="relative z-10 grid flex-1 min-h-0 grid-cols-[240px_1fr_360px] gap-2 px-2 pb-2">
@@ -402,6 +398,87 @@ function StatCell({ label, value, mono }: { label: string; value: string; mono?:
 
 function Divider() {
   return <span className="h-8 w-px bg-primary/40" />;
+}
+
+function SettingsOverlay({
+  theme,
+  setTheme,
+  onClose,
+}: {
+  theme: ThemeSlug;
+  setTheme: (s: ThemeSlug) => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm">
+      <div className="relative flex max-h-[86vh] w-full max-w-4xl flex-col overflow-hidden border-2 border-primary/70 holo glow-edge">
+        <div className="pointer-events-none absolute inset-0 cyber-grid opacity-20" />
+        <div className="pointer-events-none absolute inset-0 scanlines opacity-20" />
+        <div className="relative flex items-center justify-between border-b-2 border-primary/70 bg-primary/10 px-4 py-3">
+          <div>
+            <h2 className="font-display text-sm font-black uppercase tracking-[0.3em] neon-text">
+              НАСТРОЙКИ // ОБОЛОЧКА
+            </h2>
+            <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
+              10 скинов · цвет, геометрия и шрифты
+            </p>
+          </div>
+          <button
+            aria-label="закрыть"
+            onClick={onClose}
+            className="flex h-9 w-9 items-center justify-center border border-primary/60 neon-text transition hover:bg-primary/15"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="relative grid flex-1 gap-2 overflow-y-auto p-3 sm:grid-cols-2 lg:grid-cols-3">
+          {THEMES.map((t) => {
+            const isActive = theme === t.slug;
+            return (
+              <button
+                key={t.slug}
+                onClick={() => setTheme(t.slug)}
+                className={`group relative overflow-hidden border-2 p-3 text-left transition-all ${
+                  isActive
+                    ? "border-primary bg-primary/15 shadow-[0_0_24px_var(--glow)]"
+                    : "border-primary/40 hover:border-primary/80"
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="flex gap-1">
+                    {t.swatch.map((c, i) => (
+                      <span
+                        key={i}
+                        className="h-5 w-3 rounded-sm ring-1 ring-black/40"
+                        style={{ background: c }}
+                      />
+                    ))}
+                  </div>
+                  {isActive && (
+                    <span className="ml-auto font-mono text-[9px] uppercase tracking-[0.24em] text-primary">
+                      активна
+                    </span>
+                  )}
+                </div>
+                <div className="mt-2 font-display text-[12px] font-black uppercase tracking-[0.18em] neon-text">
+                  {t.name}
+                </div>
+                <div className="font-mono text-[10px] text-muted-foreground">{t.tagline}</div>
+                <div className="mt-2 border-t border-primary/25 pt-1.5 font-mono text-[9px] uppercase tracking-[0.18em] text-primary/70">
+                  {t.fonts}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="relative border-t-2 border-primary/70 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
+          выбор сохраняется локально · перезапуск не требуется
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function WorkPane({ title }: { title: string }) {
