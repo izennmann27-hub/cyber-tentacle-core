@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useTheme } from "@/hooks/use-theme";
-import { THEMES } from "@/lib/themes";
+import { THEMES, type ThemeSlug } from "@/lib/themes";
+import { Settings, X } from "lucide-react";
 import krakenSkullAsset from "@/assets/kraken-skull.png.asset.json";
 const krakenSkull = krakenSkullAsset.url;
 import { useEffect, useState } from "react";
@@ -93,6 +94,7 @@ function Index() {
   const { theme, setTheme } = useTheme();
   const [selected, setSelected] = useState("octopus");
   const [tab, setTab] = useState<(typeof TABS)[number]>("LAUNCHER");
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [clock, setClock] = useState("00:00:00");
   const active = TENTACLES.filter((t) => t.status !== "offline").length;
   useEffect(() => {
