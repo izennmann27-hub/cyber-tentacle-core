@@ -400,6 +400,87 @@ function Divider() {
   return <span className="h-8 w-px bg-primary/40" />;
 }
 
+function SettingsOverlay({
+  theme,
+  setTheme,
+  onClose,
+}: {
+  theme: ThemeSlug;
+  setTheme: (s: ThemeSlug) => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm">
+      <div className="relative flex max-h-[86vh] w-full max-w-4xl flex-col overflow-hidden border-2 border-primary/70 holo glow-edge">
+        <div className="pointer-events-none absolute inset-0 cyber-grid opacity-20" />
+        <div className="pointer-events-none absolute inset-0 scanlines opacity-20" />
+        <div className="relative flex items-center justify-between border-b-2 border-primary/70 bg-primary/10 px-4 py-3">
+          <div>
+            <h2 className="font-display text-sm font-black uppercase tracking-[0.3em] neon-text">
+              НАСТРОЙКИ // ОБОЛОЧКА
+            </h2>
+            <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
+              10 скинов · цвет, геометрия и шрифты
+            </p>
+          </div>
+          <button
+            aria-label="закрыть"
+            onClick={onClose}
+            className="flex h-9 w-9 items-center justify-center border border-primary/60 neon-text transition hover:bg-primary/15"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="relative grid flex-1 gap-2 overflow-y-auto p-3 sm:grid-cols-2 lg:grid-cols-3">
+          {THEMES.map((t) => {
+            const isActive = theme === t.slug;
+            return (
+              <button
+                key={t.slug}
+                onClick={() => setTheme(t.slug)}
+                className={`group relative overflow-hidden border-2 p-3 text-left transition-all ${
+                  isActive
+                    ? "border-primary bg-primary/15 shadow-[0_0_24px_var(--glow)]"
+                    : "border-primary/40 hover:border-primary/80"
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="flex gap-1">
+                    {t.swatch.map((c, i) => (
+                      <span
+                        key={i}
+                        className="h-5 w-3 rounded-sm ring-1 ring-black/40"
+                        style={{ background: c }}
+                      />
+                    ))}
+                  </div>
+                  {isActive && (
+                    <span className="ml-auto font-mono text-[9px] uppercase tracking-[0.24em] text-primary">
+                      активна
+                    </span>
+                  )}
+                </div>
+                <div className="mt-2 font-display text-[12px] font-black uppercase tracking-[0.18em] neon-text">
+                  {t.name}
+                </div>
+                <div className="font-mono text-[10px] text-muted-foreground">{t.tagline}</div>
+                <div className="mt-2 border-t border-primary/25 pt-1.5 font-mono text-[9px] uppercase tracking-[0.18em] text-primary/70">
+                  {t.fonts}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="relative border-t-2 border-primary/70 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
+          выбор сохраняется локально · перезапуск не требуется
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function WorkPane({ title }: { title: string }) {
   return (
     <div className="group relative flex min-h-0 flex-col overflow-hidden border-2 border-primary/70 holo p-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary hover:shadow-[0_0_28px_color-mix(in_oklab,var(--glow)_32%,transparent)]">
