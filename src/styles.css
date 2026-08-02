@@ -421,6 +421,43 @@
   --signal: #b9ff3d;
 }
 
+/* 11. AURORA DECK — dark navy-teal glass deck */
+:root[data-theme="aurora"] {
+  --radius: 0.8rem;
+  --display-font: "Chakra Petch", ui-sans-serif, system-ui;
+  --mono-font: "IBM Plex Mono", ui-monospace, monospace;
+  --display-tracking: 0.02em;
+  --shape-radius: 14px;
+  --shape-clip: none;
+  --chip-clip: none;
+  --panel-blur: 16px;
+  --glow-power: 0.4;
+  --bracket-opacity: 0;
+  --scan-opacity: 0;
+  --border-width: 1px;
+  --background: #0c1622;
+  --foreground: #dfeaf2;
+  --card: color-mix(in srgb, #14212e 78%, transparent);
+  --card-foreground: #dfeaf2;
+  --popover: #14212e;
+  --popover-foreground: #dfeaf2;
+  --primary: #7cc4ff;
+  --primary-foreground: #08131d;
+  --secondary: #1c2b3a;
+  --secondary-foreground: #dfeaf2;
+  --muted: #16222f;
+  --muted-foreground: #8ba3b6;
+  --accent: #4fd8c4;
+  --accent-foreground: #07201c;
+  --destructive: #ff6b81;
+  --destructive-foreground: #ffffff;
+  --border: color-mix(in srgb, #7cc4ff 22%, transparent);
+  --input: color-mix(in srgb, #7cc4ff 12%, transparent);
+  --ring: #7cc4ff;
+  --glow: #7cc4ff;
+  --signal: #4fd8c4;
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
