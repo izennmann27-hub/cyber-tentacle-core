@@ -8,7 +8,8 @@ export type ThemeSlug =
   | "dracula"
   | "nord"
   | "ubuntu"
-  | "matrix";
+  | "matrix"
+  | "aurora";
 
 export interface ThemeDef {
   slug: ThemeSlug;
@@ -30,6 +31,7 @@ export const THEMES: ThemeDef[] = [
   { slug: "nord",      name: "NORD FROST",  tagline: "Nord // северный минимал",            fonts: "Chakra Petch / IBM Plex Mono",   shape: "радиус 8px · спокойные тени",                     swatch: ["#2e3440", "#88c0d0", "#a3be8c", "#ebcb8b"] },
   { slug: "ubuntu",    name: "UBUNTU TERM", tagline: "GNOME Terminal // баклажан + оранж",  fonts: "Share Tech Mono",                shape: "радиус 6px · скан-линии",                         swatch: ["#300a24", "#e95420", "#77bb41", "#e95420"] },
   { slug: "matrix",    name: "MATRIX CRT",  tagline: "Зелёный фосфор // ЭЛТ-терминал",      fonts: "Major Mono Display / Share Tech",shape: "прямые углы · CRT-скан · max glow",               swatch: ["#000b04", "#00ff62", "#b9ff3d", "#00ff62"] },
+  { slug: "aurora",    name: "AURORA DECK", tagline: "Тёмно-синее стекло // мягкие пилюли",  fonts: "Chakra Petch / IBM Plex Mono",    shape: "радиус 14px · pill-кнопки · бирюзовый градиент",  swatch: ["#0c1622", "#7cc4ff", "#4fd8c4", "#7cc4ff"] },
 ];
 
 export const DEFAULT_THEME: ThemeSlug = "nightcity";
