@@ -492,6 +492,66 @@
     color: var(--color-foreground);
     font-family: var(--font-mono);
   }
+}
+
+/* 12. OCTO NET — 0ct0d3m0n.ru: тёмно-синий/фиолетовый глитч, тонкие рамки */
+:root[data-theme="octo"] {
+  --radius: 0rem;
+  --display-font: "Chakra Petch", ui-sans-serif, system-ui;
+  --mono-font: "IBM Plex Mono", ui-monospace, monospace;
+  --display-tracking: 0.22em;
+  --shape-radius: 0px;
+  --shape-clip: none;
+  --chip-clip: none;
+  --panel-blur: 2px;
+  --glow-power: 0.5;
+  --bracket-opacity: 0;
+  --scan-opacity: 0.5;
+  --border-width: 1px;
+  --background: #090b18;
+  --foreground: #cfd8f5;
+  --card: color-mix(in srgb, #141033 40%, transparent);
+  --card-foreground: #cfd8f5;
+  --popover: #141033;
+  --popover-foreground: #cfd8f5;
+  --primary: #8fb4ff;
+  --primary-foreground: #070a16;
+  --secondary: #191536;
+  --secondary-foreground: #cfd8f5;
+  --muted: #12122a;
+  --muted-foreground: #6d76a3;
+  --accent: #6f5cff;
+  --accent-foreground: #070a16;
+  --destructive: #ff5c7a;
+  --destructive-foreground: #ffffff;
+  --border: color-mix(in srgb, #8fb4ff 26%, transparent);
+  --input: color-mix(in srgb, #8fb4ff 14%, transparent);
+  --ring: #8fb4ff;
+  --glow: #6f5cff;
+  --signal: #8fb4ff;
+}
+
+@layer base {
+  :root[data-theme="octo"] body {
+    background:
+      radial-gradient(1200px 800px at 30% 20%, #1a1140 0%, transparent 60%),
+      radial-gradient(900px 700px at 80% 90%, #101a3d 0%, transparent 60%),
+      linear-gradient(180deg, #090b18, #070812);
+  }
+}
+
+@keyframes glitchShift {
+  0%, 100% { transform: translateX(0); opacity: 0.5; }
+  50% { transform: translateX(-2px); opacity: 0.75; }
+}
+.animate-glitchShift { animation: glitchShift 3.5s steps(3, end) infinite; }
+@keyframes streamUp {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+.animate-streamUp { animation: streamUp 60s linear infinite; }
+
+@layer base {
   h1, h2, h3, h4 {
     font-family: var(--font-display);
     letter-spacing: var(--display-tracking, 0.02em);
