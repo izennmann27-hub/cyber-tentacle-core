@@ -69,7 +69,12 @@ function GlitchBackdrop() {
       <img
         src={krakenSkull.url}
         alt=""
-        className="absolute left-1/2 top-1/2 w-[min(1100px,92vw)] -translate-x-1/2 -translate-y-1/2 opacity-[0.13] mix-blend-screen animate-breathe"
+        className="absolute left-1/2 top-1/2 w-[min(1100px,92vw)] -translate-x-1/2 -translate-y-1/2 opacity-[0.16] mix-blend-screen animate-breathe"
+        style={{
+          maskImage: "radial-gradient(58% 52% at 50% 46%, #000 45%, transparent 78%)",
+          WebkitMaskImage: "radial-gradient(58% 52% at 50% 46%, #000 45%, transparent 78%)",
+          filter: "grayscale(0.7) hue-rotate(200deg) saturate(1.4)",
+        }}
       />
       <div className="absolute inset-0 cyber-grid opacity-25" />
       <div className="absolute inset-0 animate-streamUp">
@@ -136,7 +141,7 @@ function OctoTerminal() {
           <span>ВЕРСИЯ 26</span>
         </header>
 
-        <section className="flex flex-1 flex-col justify-end px-6 pb-[28vh]">
+        <section className="flex flex-1 flex-col justify-end px-6 pb-[24vh]">
           <div className="mx-auto w-full max-w-3xl">
             <h1 className="mb-6 text-center font-display text-2xl uppercase text-foreground/90 sm:text-3xl">
               локальная голова готова
