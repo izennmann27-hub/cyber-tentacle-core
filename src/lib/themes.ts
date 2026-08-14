@@ -9,7 +9,8 @@ export type ThemeSlug =
   | "nord"
   | "ubuntu"
   | "matrix"
-  | "aurora";
+  | "aurora"
+  | "octo";
 
 export interface ThemeDef {
   slug: ThemeSlug;
@@ -32,9 +33,10 @@ export const THEMES: ThemeDef[] = [
   { slug: "ubuntu",    name: "UBUNTU TERM", tagline: "GNOME Terminal // баклажан + оранж",  fonts: "Share Tech Mono",                shape: "радиус 6px · скан-линии",                         swatch: ["#300a24", "#e95420", "#77bb41", "#e95420"] },
   { slug: "matrix",    name: "MATRIX CRT",  tagline: "Зелёный фосфор // ЭЛТ-терминал",      fonts: "Major Mono Display / Share Tech",shape: "прямые углы · CRT-скан · max glow",               swatch: ["#000b04", "#00ff62", "#b9ff3d", "#00ff62"] },
   { slug: "aurora",    name: "AURORA DECK", tagline: "Тёмно-синее стекло // мягкие пилюли",  fonts: "Chakra Petch / IBM Plex Mono",    shape: "радиус 14px · pill-кнопки · бирюзовый градиент",  swatch: ["#0c1622", "#7cc4ff", "#4fd8c4", "#7cc4ff"] },
+  { slug: "octo",      name: "OCTO NET",    tagline: "0ct0d3m0n // сине-фиолетовый глитч",   fonts: "Chakra Petch / IBM Plex Mono",    shape: "тонкие рамки · без радиуса · глитч-полосы",       swatch: ["#0b0d1c", "#8fb4ff", "#6f5cff", "#8fb4ff"] },
 ];
 
-export const DEFAULT_THEME: ThemeSlug = "nightcity";
+export const DEFAULT_THEME: ThemeSlug = "octo";
 
 export function applyTheme(slug: ThemeSlug) {
   if (typeof document === "undefined") return;
