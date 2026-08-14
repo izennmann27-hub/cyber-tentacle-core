@@ -66,14 +66,17 @@ function GlitchBackdrop() {
   const lines = useMemo(() => glitchLines(70, 20260814), []);
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-      <img
-        src={krakenSkull.url}
-        alt=""
-        className="absolute left-1/2 top-1/2 w-[min(1100px,92vw)] -translate-x-1/2 -translate-y-1/2 opacity-[0.16] mix-blend-screen animate-breathe"
+      <div
+        className="absolute left-1/2 top-1/2 h-[min(760px,86vh)] w-[min(1100px,92vw)] -translate-x-1/2 -translate-y-1/2 animate-breathe"
         style={{
-          maskImage: "radial-gradient(58% 52% at 50% 46%, #000 45%, transparent 78%)",
-          WebkitMaskImage: "radial-gradient(58% 52% at 50% 46%, #000 45%, transparent 78%)",
-          filter: "grayscale(0.7) hue-rotate(200deg) saturate(1.4)",
+          backgroundImage: `url(${krakenSkull.url})`,
+          backgroundSize: "contain",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          opacity: 0.2,
+          filter: "grayscale(1) brightness(0.9)",
+          maskImage: "radial-gradient(56% 52% at 50% 48%, #000 40%, transparent 76%)",
+          WebkitMaskImage: "radial-gradient(56% 52% at 50% 48%, #000 40%, transparent 76%)",
         }}
       />
       <div className="absolute inset-0 cyber-grid opacity-25" />
