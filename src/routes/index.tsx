@@ -79,7 +79,16 @@ function GlitchBackdrop() {
           WebkitMaskImage: "radial-gradient(56% 52% at 50% 48%, #000 40%, transparent 76%)",
         }}
       />
-      <div className="absolute inset-0 cyber-grid opacity-25" />
+      <div
+        className="absolute inset-0 opacity-30"
+        style={{
+          backgroundImage:
+            "linear-gradient(color-mix(in oklab, var(--primary) 10%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in oklab, var(--primary) 10%, transparent) 1px, transparent 1px)",
+          backgroundSize: "56px 56px, 56px 56px",
+          maskImage: "radial-gradient(ellipse at center, #000 35%, transparent 80%)",
+          WebkitMaskImage: "radial-gradient(ellipse at center, #000 35%, transparent 80%)",
+        }}
+      />
       <div className="absolute inset-0 animate-streamUp">
         {[0, 1].map((k) => (
           <div key={k} className="px-6">
@@ -96,7 +105,13 @@ function GlitchBackdrop() {
         ))}
       </div>
       <div className="absolute inset-0 scanlines" />
-      <div className="absolute inset-0 bg-[radial-gradient(70%_60%_at_50%_70%,transparent,var(--background))] opacity-90" />
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(70% 60% at 50% 68%, transparent 0%, color-mix(in oklab, var(--background) 88%, transparent) 100%)",
+        }}
+      />
     </div>
   );
 }
@@ -135,7 +150,7 @@ function OctoTerminal() {
   };
 
   return (
-    <main className="relative min-h-screen w-full cyber-surface overflow-hidden">
+    <main className="relative min-h-screen w-full overflow-hidden bg-background">
       <GlitchBackdrop />
 
       <div className="relative z-10 flex min-h-screen flex-col justify-between">
