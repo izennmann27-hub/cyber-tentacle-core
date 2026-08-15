@@ -105,12 +105,38 @@ function useClock() {
   return t;
 }
 
-function StatusBar({ time }: { time: string }) {
+const DOCK_APPS = [
+  { glyph: "◉", label: "Голова" },
+  { glyph: "≋", label: "Щупальца" },
+  { glyph: "⌘", label: "Терминал" },
+  { glyph: "◫", label: "Файлы" },
+  { glyph: "✉", label: "Почта" },
+];
+
+function Dock({ wide }: { wide?: boolean }) {
   return (
-    <div className="flex items-center justify-between px-6 pt-3 font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
-      <span className="text-primary/70">{time}</span>
-      <span className="truncate">осьминог-0 · локально</span>
-      <span>▮▮▮ 92%</span>
+    <div
+      onClick={(e) => e.stopPropagation()}
+      className={cn(
+        "mx-auto flex w-full max-w-[520px] items-center justify-between gap-2 rounded-[32px] border border-primary/20 bg-background/45 px-4 py-3 backdrop-blur-md",
+        wide && "max-w-[560px]",
+      )}
+    >
+      {DOCK_APPS.map((a) => (
+        <button
+          key={a.label}
+          type="button"
+          aria-label={a.label}
+          className="flex flex-col items-center gap-1.5"
+        >
+          <span className="flex h-12 w-12 items-center justify-center rounded-[18px] border border-primary/30 bg-primary/10 font-display text-lg text-primary transition-colors hover:bg-primary/20">
+            {a.glyph}
+          </span>
+          <span className="font-mono text-[8px] uppercase tracking-[0.18em] text-muted-foreground">
+            {a.label}
+          </span>
+        </button>
+      ))}
     </div>
   );
 }
@@ -271,8 +297,7 @@ function PromptBar({ compact }: { compact?: boolean }) {
 function LockContent({ time, date }: { time: string; date: string }) {
   return (
     <div className="relative z-10 flex h-full flex-col">
-      <StatusBar time={time} />
-      <div className="px-7 pt-16 text-center">
+      <div className="px-7 pt-24 text-center">
         <div className="font-display text-6xl leading-none tracking-[0.08em] text-foreground/92">{time}</div>
         <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.3em] text-primary/70">{date}</div>
       </div>
@@ -286,14 +311,13 @@ function LockContent({ time, date }: { time: string; date: string }) {
 function HomeContent({ time, wide }: { time: string; wide?: boolean }) {
   return (
     <div className="relative z-10 flex h-full flex-col">
-      <StatusBar time={time} />
-      <div className={cn("px-6 pt-10", wide && "px-12 pt-14")}>
+      <div className={cn("px-6 pt-14", wide && "px-12 pt-20")}>
         <WeatherWidget wide={wide} />
       </div>
-      <div className={cn("mt-auto px-6 pb-[18%]", wide && "px-12 pb-[14%]")}>
+      <div className={cn("mt-auto px-6 pb-4", wide && "px-12")}>
         <PromptBar compact={!wide} />
-        <div className="mt-3 text-center font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground/80">
-          100% локально
+        <div className="mt-4">
+          <Dock wide={wide} />
         </div>
       </div>
     </div>
