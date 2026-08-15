@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { GlitchBackdrop } from "@/components/glitch-backdrop";
 import { cn } from "@/lib/utils";
 
@@ -68,11 +69,64 @@ function StatusBar({ time }: { time: string }) {
   );
 }
 
+const WEATHER_CODES: Record<number, string> = {
+  0: "ясно", 1: "почти ясно", 2: "переменная облачность", 3: "облачно",
+  45: "туман", 48: "изморозь", 51: "морось", 53: "морось", 55: "морось",
+  61: "дождь", 63: "дождь", 65: "ливень", 71: "снег", 73: "снег", 75: "снег",
+  80: "ливни", 81: "ливни", 82: "ливни", 95: "гроза", 96: "гроза", 99: "гроза",
+};
+
+interface Weather {
+  temp: number;
+  wind: number;
+  code: number;
+  hours: { h: string; t: number }[];
+}
+
+async function fetchWeather(): Promise<Weather> {
+  const r = await fetch(
+    "https://api.open-meteo.com/v1/forecast?latitude=55.7558&longitude=37.6173&current=temperature_2m,wind_speed_10m,weather_code&hourly=temperature_2m&forecast_days=2&timezone=Europe%2FMoscow",
+  );
+  if (!r.ok) throw new Error("weather unavailable");
+  const j = (await r.json()) as {
+    current: { temperature_2m: number; wind_speed_10m: number; weather_code: number };
+    hourly: { time: string[]; temperature_2m: number[] };
+  };
+  const now = Date.now();
+  const hours = j.hourly.time
+    .map((t, i) => ({ ts: new Date(t).getTime(), t: j.hourly.temperature_2m[i] }))
+    .filter((x) => x.ts > now)
+    .slice(0, 8)
+    .filter((_, i) => i % 2 === 0)
+    .map((x) => ({
+      h: new Date(x.ts).toLocaleTimeString("ru-RU", { hour: "2-digit" }).replace(":00", ""),
+      t: Math.round(x.t),
+    }));
+  return {
+    temp: Math.round(j.current.temperature_2m),
+    wind: Math.round(j.current.wind_speed_10m / 3.6),
+    code: j.current.weather_code,
+    hours,
+  };
+}
+
 function WeatherWidget({ wide }: { wide?: boolean }) {
+  const { data, isPending, isError, refetch } = useQuery({
+    queryKey: ["weather", "moscow"],
+    queryFn: fetchWeather,
+    staleTime: 10 * 60 * 1000,
+    refetchInterval: 15 * 60 * 1000,
+  });
+
   return (
-    <div
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        void refetch();
+      }}
       className={cn(
-        "rounded-[28px] border border-primary/25 bg-background/40 p-5 backdrop-blur-md",
+        "w-full rounded-[28px] border border-primary/25 bg-background/40 p-5 text-left backdrop-blur-md transition-colors hover:border-primary/45",
         wide && "flex items-center justify-between gap-6",
       )}
     >
@@ -81,26 +135,29 @@ function WeatherWidget({ wide }: { wide?: boolean }) {
           москва · сейчас
         </div>
         <div className="mt-1 flex items-end gap-3">
-          <span className="font-display text-4xl leading-none text-foreground/90">+21°</span>
+          <span className="font-display text-4xl leading-none text-foreground/90">
+            {data ? `${data.temp > 0 ? "+" : ""}${data.temp}°` : isError ? "--°" : "···"}
+          </span>
           <span className="pb-1 font-mono text-[10px] uppercase tracking-[0.24em] text-primary/70">
-            туман · ветер 3 м/с
+            {data
+              ? `${WEATHER_CODES[data.code] ?? "погода"} · ветер ${data.wind} м/с`
+              : isError
+                ? "нет связи · тап для повтора"
+                : isPending
+                  ? "загрузка"
+                  : ""}
           </span>
         </div>
       </div>
       <div className={cn("mt-4 flex gap-4", wide && "mt-0")}>
-        {[
-          ["12", "+22°"],
-          ["15", "+23°"],
-          ["18", "+20°"],
-          ["21", "+17°"],
-        ].map(([h, v]) => (
-          <div key={h} className="text-center font-mono text-[10px] text-muted-foreground">
-            <div className="tracking-[0.2em]">{h}</div>
-            <div className="mt-1 text-foreground/85">{v}</div>
+        {(data?.hours ?? []).map((x) => (
+          <div key={x.h} className="text-center font-mono text-[10px] text-muted-foreground">
+            <div className="tracking-[0.2em]">{x.h}</div>
+            <div className="mt-1 text-foreground/85">{`${x.t > 0 ? "+" : ""}${x.t}°`}</div>
           </div>
         ))}
       </div>
-    </div>
+    </button>
   );
 }
 
