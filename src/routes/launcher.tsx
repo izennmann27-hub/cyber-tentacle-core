@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { GlitchBackdrop } from "@/components/glitch-backdrop";
 import { cn } from "@/lib/utils";
 
@@ -68,11 +69,64 @@ function StatusBar({ time }: { time: string }) {
   );
 }
 
+const WEATHER_CODES: Record<number, string> = {
+  0: "ясно", 1: "почти ясно", 2: "переменная облачность", 3: "облачно",
+  45: "туман", 48: "изморозь", 51: "морось", 53: "морось", 55: "морось",
+  61: "дождь", 63: "дождь", 65: "ливень", 71: "снег", 73: "снег", 75: "снег",
+  80: "ливни", 81: "ливни", 82: "ливни", 95: "гроза", 96: "гроза", 99: "гроза",
+};
+
+interface Weather {
+  temp: number;
+  wind: number;
+  code: number;
+  hours: { h: string; t: number }[];
+}
+
+async function fetchWeather(): Promise<Weather> {
+  const r = await fetch(
+    "https://api.open-meteo.com/v1/forecast?latitude=55.7558&longitude=37.6173&current=temperature_2m,wind_speed_10m,weather_code&hourly=temperature_2m&forecast_days=2&timezone=Europe%2FMoscow",
+  );
+  if (!r.ok) throw new Error("weather unavailable");
+  const j = (await r.json()) as {
+    current: { temperature_2m: number; wind_speed_10m: number; weather_code: number };
+    hourly: { time: string[]; temperature_2m: number[] };
+  };
+  const now = Date.now();
+  const hours = j.hourly.time
+    .map((t, i) => ({ ts: new Date(t).getTime(), t: j.hourly.temperature_2m[i] }))
+    .filter((x) => x.ts > now)
+    .slice(0, 8)
+    .filter((_, i) => i % 2 === 0)
+    .map((x) => ({
+      h: new Date(x.ts).toLocaleTimeString("ru-RU", { hour: "2-digit" }).replace(":00", ""),
+      t: Math.round(x.t),
+    }));
+  return {
+    temp: Math.round(j.current.temperature_2m),
+    wind: Math.round(j.current.wind_speed_10m / 3.6),
+    code: j.current.weather_code,
+    hours,
+  };
+}
+
 function WeatherWidget({ wide }: { wide?: boolean }) {
+  const { data, isPending, isError, refetch } = useQuery({
+    queryKey: ["weather", "moscow"],
+    queryFn: fetchWeather,
+    staleTime: 10 * 60 * 1000,
+    refetchInterval: 15 * 60 * 1000,
+  });
+
   return (
-    <div
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        void refetch();
+      }}
       className={cn(
-        "rounded-[28px] border border-primary/25 bg-background/40 p-5 backdrop-blur-md",
+        "w-full rounded-[28px] border border-primary/25 bg-background/40 p-5 text-left backdrop-blur-md transition-colors hover:border-primary/45",
         wide && "flex items-center justify-between gap-6",
       )}
     >
@@ -81,42 +135,90 @@ function WeatherWidget({ wide }: { wide?: boolean }) {
           москва · сейчас
         </div>
         <div className="mt-1 flex items-end gap-3">
-          <span className="font-display text-4xl leading-none text-foreground/90">+21°</span>
+          <span className="font-display text-4xl leading-none text-foreground/90">
+            {data ? `${data.temp > 0 ? "+" : ""}${data.temp}°` : isError ? "--°" : "···"}
+          </span>
           <span className="pb-1 font-mono text-[10px] uppercase tracking-[0.24em] text-primary/70">
-            туман · ветер 3 м/с
+            {data
+              ? `${WEATHER_CODES[data.code] ?? "погода"} · ветер ${data.wind} м/с`
+              : isError
+                ? "нет связи · тап для повтора"
+                : isPending
+                  ? "загрузка"
+                  : ""}
           </span>
         </div>
       </div>
       <div className={cn("mt-4 flex gap-4", wide && "mt-0")}>
-        {[
-          ["12", "+22°"],
-          ["15", "+23°"],
-          ["18", "+20°"],
-          ["21", "+17°"],
-        ].map(([h, v]) => (
-          <div key={h} className="text-center font-mono text-[10px] text-muted-foreground">
-            <div className="tracking-[0.2em]">{h}</div>
-            <div className="mt-1 text-foreground/85">{v}</div>
+        {(data?.hours ?? []).map((x) => (
+          <div key={x.h} className="text-center font-mono text-[10px] text-muted-foreground">
+            <div className="tracking-[0.2em]">{x.h}</div>
+            <div className="mt-1 text-foreground/85">{`${x.t > 0 ? "+" : ""}${x.t}°`}</div>
           </div>
         ))}
       </div>
-    </div>
+    </button>
   );
 }
 
+interface Task {
+  id: number;
+  text: string;
+}
+
 function PromptBar({ compact }: { compact?: boolean }) {
+  const [value, setValue] = useState("");
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const idRef = useRef(0);
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const text = value.trim();
+    if (!text) return;
+    idRef.current += 1;
+    setTasks((prev) => [{ id: idRef.current, text }, ...prev].slice(0, 3));
+    setValue("");
+  };
+
   return (
-    <form
-      onSubmit={(e) => e.preventDefault()}
-      className="flex items-center gap-3 rounded-full border border-primary/30 bg-background/45 px-5 py-3 backdrop-blur-md transition-colors focus-within:border-primary/70"
-    >
-      <span className="font-mono text-[10px] text-primary/60">▌</span>
-      <input
-        aria-label="Запрос к голове"
-        placeholder={compact ? "спросить голову" : "опишите задачу — голова выберет щупальца"}
-        className="w-full bg-transparent font-mono text-[11px] text-foreground placeholder:text-muted-foreground/70 focus:outline-none"
-      />
-    </form>
+    <div onClick={(e) => e.stopPropagation()}>
+      {tasks.length ? (
+        <div className="mb-3 space-y-2">
+          {tasks.map((t) => (
+            <div
+              key={t.id}
+              className="rounded-[20px] border border-primary/20 bg-background/45 px-4 py-2 backdrop-blur-md"
+            >
+              <div className="font-mono text-[9px] uppercase tracking-[0.28em] text-primary/70">
+                голова · принято
+              </div>
+              <div className="mt-1 truncate font-mono text-[11px] text-foreground/90">{t.text}</div>
+            </div>
+          ))}
+        </div>
+      ) : null}
+      <form
+        onSubmit={submit}
+        className="flex items-center gap-3 rounded-full border border-primary/30 bg-background/45 px-5 py-3 backdrop-blur-md transition-colors focus-within:border-primary/70"
+      >
+        <span className="font-mono text-[10px] text-primary/60">▌</span>
+        <input
+          aria-label="Задача или вопрос голове"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          enterKeyHint="send"
+          placeholder={compact ? "задача или вопрос" : "опишите задачу или задайте вопрос голове"}
+          className="w-full bg-transparent font-mono text-[11px] text-foreground placeholder:text-muted-foreground/70 focus:outline-none"
+        />
+        <button
+          type="submit"
+          aria-label="Отправить голове"
+          className="shrink-0 rounded-full border border-primary/40 px-3 py-1 font-mono text-[9px] uppercase tracking-[0.2em] text-primary transition-colors hover:bg-primary/10"
+        >
+          ↵
+        </button>
+      </form>
+    </div>
   );
 }
 
@@ -152,37 +254,13 @@ function HomeContent({ time, wide }: { time: string; wide?: boolean }) {
   );
 }
 
-function GearButton({ onClick }: { onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      aria-label="Настройки лаунчера"
-      onClick={onClick}
-      className="absolute right-4 top-3 z-20 rounded-full border border-primary/25 bg-background/40 p-2 text-primary/70 backdrop-blur-md transition-colors hover:text-primary"
-    >
-      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.6">
-        <circle cx="12" cy="12" r="3.2" />
-        <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6" />
-      </svg>
-    </button>
-  );
-}
-
 function SettingsOverlay({
   accent,
   onAccent,
-  folded,
-  onFolded,
-  locked,
-  onLocked,
   onClose,
 }: {
   accent: string;
   onAccent: (v: string) => void;
-  folded: boolean;
-  onFolded: (v: boolean) => void;
-  locked: boolean;
-  onLocked: (v: boolean) => void;
   onClose: () => void;
 }) {
   useEffect(() => {
@@ -192,8 +270,11 @@ function SettingsOverlay({
   }, [onClose]);
 
   return (
-    <div className="absolute inset-0 z-30 flex items-end bg-background/70 backdrop-blur-md">
-      <div className="w-full rounded-t-[28px] border-t border-primary/25 bg-background/85 p-6">
+    <div className="absolute inset-0 z-30 flex items-end bg-background/70 backdrop-blur-md" onClick={onClose}>
+      <div
+        className="w-full rounded-t-[28px] border-t border-primary/25 bg-background/85 p-6"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between">
           <h2 className="font-display text-sm uppercase tracking-[0.24em] text-foreground/90">настройки</h2>
           <button
@@ -234,31 +315,6 @@ function SettingsOverlay({
             />
           </label>
         </div>
-
-        <div className="mt-6 font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
-          режим прототипа
-        </div>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {[
-            { on: !folded, label: "раскрыт", act: () => onFolded(false) },
-            { on: folded, label: "сложен", act: () => onFolded(true) },
-            { on: locked, label: "блокировка", act: () => onLocked(!locked) },
-          ].map((b) => (
-            <button
-              key={b.label}
-              type="button"
-              onClick={b.act}
-              className={cn(
-                "rounded-full border px-3 py-1 font-mono text-[9px] uppercase tracking-[0.24em] transition-colors",
-                b.on
-                  ? "border-primary/70 bg-primary/10 text-primary"
-                  : "border-primary/25 text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {b.label}
-            </button>
-          ))}
-        </div>
       </div>
     </div>
   );
@@ -266,50 +322,46 @@ function SettingsOverlay({
 
 function LauncherPrototype() {
   const { time, date } = useClock();
-  const [folded, setFolded] = useState(false);
+  const [wide, setWide] = useState(true);
   const [locked, setLocked] = useState(false);
   const [settings, setSettings] = useState(false);
   const { accent, setAccent } = useAccent();
 
+  useEffect(() => {
+    setLocked(new URLSearchParams(window.location.search).has("lock"));
+    const mq = window.matchMedia("(min-width: 700px)");
+    const apply = () => setWide(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+
   return (
     <main
       data-theme="octo"
+      onClick={() => setSettings(true)}
       className="relative h-screen w-full overflow-hidden bg-background"
       style={
         {
           "--primary": accent,
           "--accent": accent,
           "--glow": accent,
+          "--color-primary": accent,
+          "--color-accent": accent,
         } as React.CSSProperties
       }
     >
-      <div
-        className={cn(
-          "relative mx-auto h-full overflow-hidden bg-background",
-          folded ? "max-w-[420px]" : "max-w-[900px]",
-        )}
-      >
-        <GlitchBackdrop
-          animated={locked}
-          seed={folded ? 7311 : 20260815}
-          lineCount={folded ? 46 : 58}
-          lineLength={folded ? 12 : 30}
-          skullOpacity={locked ? 0.2 : 0.34}
-        />
-        <GearButton onClick={() => setSettings(true)} />
-        {locked ? <LockContent time={time} date={date} /> : <HomeContent time={time} wide={!folded} />}
-        {settings ? (
-          <SettingsOverlay
-            accent={accent}
-            onAccent={setAccent}
-            folded={folded}
-            onFolded={setFolded}
-            locked={locked}
-            onLocked={setLocked}
-            onClose={() => setSettings(false)}
-          />
-        ) : null}
-      </div>
+      <GlitchBackdrop
+        animated={locked}
+        seed={wide ? 20260815 : 7311}
+        lineCount={wide ? 58 : 46}
+        lineLength={wide ? 30 : 12}
+        skullOpacity={locked ? 0.2 : 0.34}
+      />
+      {locked ? <LockContent time={time} date={date} /> : <HomeContent time={time} wide={wide} />}
+      {settings ? (
+        <SettingsOverlay accent={accent} onAccent={setAccent} onClose={() => setSettings(false)} />
+      ) : null}
     </main>
   );
 }
