@@ -346,6 +346,8 @@ function LauncherPrototype() {
           "--primary": accent,
           "--accent": accent,
           "--glow": accent,
+          "--color-primary": accent,
+          "--color-accent": accent,
         } as React.CSSProperties
       }
     >
