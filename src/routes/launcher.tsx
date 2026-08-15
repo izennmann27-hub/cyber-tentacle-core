@@ -12,12 +12,12 @@ export const Route = createFileRoute("/launcher")({
       {
         name: "description",
         content:
-          "Прототип киберпанк-лаунчера Осьминога для Samsung Galaxy Z Fold 6: обложка и раскрытый экран, щупальца-инструменты, локальная голова-модель.",
+          "Прототип киберпанк-лаунчера Осьминога для Samsung Galaxy Z Fold 6: экран блокировки с анимацией и чистый главный экран с виджетом погоды и строкой к голове.",
       },
       { property: "og:title", content: "ОСЬМИНОГ // лаунчер Z Fold 6" },
       {
         property: "og:description",
-        content: "Складной лаунчер: строка ввода к локальной голове и сетка щупалец-инструментов.",
+        content: "Складной лаунчер: обои-осьминог, виджет погоды и одна строка вопроса локальной голове.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -26,31 +26,16 @@ export const Route = createFileRoute("/launcher")({
   component: LauncherPrototype,
 });
 
-interface Tool {
-  glyph: string;
-  name: string;
-  model: string;
-  load: number;
-}
-
-const TOOLS: Tool[] = [
-  { glyph: "亭", name: "TERMINAL", model: "bash-8b", load: 12 },
-  { glyph: "侬", name: "SWE", model: "coder-14b", load: 61 },
-  { glyph: "田", name: "WEB", model: "probe-3b", load: 24 },
-  { glyph: "仞", name: "VISION", model: "clip-l", load: 8 },
-  { glyph: "严", name: "ГОЛОС", model: "whisper-s", load: 0 },
-  { glyph: "丐", name: "ПАМЯТЬ", model: "vec-mini", load: 39 },
-  { glyph: "佷", name: "ФАЙЛЫ", model: "fs-agent", load: 4 },
-  { glyph: "↯", name: "МАРКЕТ", model: "octo.net", load: 0 },
-];
-
 function useClock() {
-  const [t, setT] = useState("--:--");
+  const [t, setT] = useState({ time: "--:--", date: "" });
   useEffect(() => {
-    const tick = () =>
-      setT(
-        new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" }),
-      );
+    const tick = () => {
+      const d = new Date();
+      setT({
+        time: d.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" }),
+        date: d.toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" }),
+      });
+    };
     tick();
     const id = setInterval(tick, 15000);
     return () => clearInterval(id);
@@ -60,27 +45,47 @@ function useClock() {
 
 function StatusBar({ time }: { time: string }) {
   return (
-    <div className="flex items-center justify-between px-4 pt-2 font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
+    <div className="flex items-center justify-between px-6 pt-3 font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
       <span className="text-primary/70">{time}</span>
-      <span>осьминог-0 · локально</span>
+      <span className="truncate">осьминог-0 · локально</span>
       <span>▮▮▮ 92%</span>
     </div>
   );
 }
 
-function ToolTile({ t }: { t: Tool }) {
+function WeatherWidget({ wide }: { wide?: boolean }) {
   return (
-    <button className="group relative flex flex-col items-center gap-1.5 p-1">
-      <span className="grid h-12 w-12 place-items-center border border-primary/30 bg-background/50 font-display text-lg text-primary/90 transition-colors group-hover:border-primary/70 group-hover:bg-primary/10">
-        {t.glyph}
-      </span>
-      <span className="font-mono text-[8px] uppercase tracking-[0.18em] text-foreground/80">
-        {t.name}
-      </span>
-      <span className="h-px w-8 bg-primary/20">
-        <span className="block h-px bg-primary/70" style={{ width: `${t.load}%` }} />
-      </span>
-    </button>
+    <div
+      className={cn(
+        "rounded-[28px] border border-primary/25 bg-background/40 p-5 backdrop-blur-md",
+        wide && "flex items-center justify-between gap-6",
+      )}
+    >
+      <div>
+        <div className="font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
+          москва · сейчас
+        </div>
+        <div className="mt-1 flex items-end gap-3">
+          <span className="font-display text-4xl leading-none text-foreground/90">+21°</span>
+          <span className="pb-1 font-mono text-[10px] uppercase tracking-[0.24em] text-primary/70">
+            туман · ветер 3 м/с
+          </span>
+        </div>
+      </div>
+      <div className={cn("mt-4 flex gap-4", wide && "mt-0")}>
+        {[
+          ["12", "+22°"],
+          ["15", "+23°"],
+          ["18", "+20°"],
+          ["21", "+17°"],
+        ].map(([h, v]) => (
+          <div key={h} className="text-center font-mono text-[10px] text-muted-foreground">
+            <div className="tracking-[0.2em]">{h}</div>
+            <div className="mt-1 text-foreground/85">{v}</div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -88,129 +93,88 @@ function PromptBar({ compact }: { compact?: boolean }) {
   return (
     <form
       onSubmit={(e) => e.preventDefault()}
-      className="flex items-center gap-2 border border-primary/30 bg-background/50 px-3 py-2 backdrop-blur-sm focus-within:border-primary/70"
+      className="flex items-center gap-3 rounded-full border border-primary/30 bg-background/45 px-5 py-3 backdrop-blur-md transition-colors focus-within:border-primary/70"
     >
       <span className="font-mono text-[10px] text-primary/60">▌</span>
       <input
         aria-label="Запрос к голове"
-        placeholder={compact ? "задача → голова" : "опишите задачу — голова выберет щупальца"}
+        placeholder={compact ? "спросить голову" : "опишите задачу — голова выберет щупальца"}
         className="w-full bg-transparent font-mono text-[11px] text-foreground placeholder:text-muted-foreground/70 focus:outline-none"
       />
     </form>
   );
 }
 
-function Dock() {
+/* ЭКРАН БЛОКИРОВКИ — анимированные обои */
+function LockContent({ time, date }: { time: string; date: string }) {
   return (
-    <div className="mx-4 mb-3 flex items-center justify-around border border-primary/20 bg-background/40 px-2 py-2 backdrop-blur-sm">
-      {["亭", "侬", "田", "↯"].map((g) => (
-        <span
-          key={g}
-          className="grid h-9 w-9 place-items-center border border-primary/25 font-display text-base text-primary/85"
-        >
-          {g}
-        </span>
-      ))}
-    </div>
-  );
-}
-
-/* Cover display: 968x2376 → 22.5:9 */
-function CoverScreen({ time }: { time: string }) {
-  return (
-    <div className="relative h-[820px] w-[332px] overflow-hidden border border-primary/30 bg-background">
-      <GlitchBackdrop seed={7311} lineCount={46} lineLength={12} skullOpacity={0.14} />
-      <div className="relative z-10 flex h-full flex-col">
-        <StatusBar time={time} />
-        <div className="px-4 pt-8">
-          <div className="font-display text-lg uppercase tracking-[0.24em] text-foreground/90">
-            голова
-          </div>
-          <div className="font-mono text-[9px] uppercase tracking-[0.3em] text-primary/70">
-            готова · 8 щупалец
-          </div>
+    <div className="relative z-10 flex h-full flex-col">
+      <StatusBar time={time} />
+      <div className="px-7 pt-16 text-center">
+        <div className="font-display text-6xl leading-none tracking-[0.08em] text-foreground/92">
+          {time}
         </div>
-        <div className="mt-6 grid grid-cols-3 gap-1 px-3">
-          {TOOLS.slice(0, 6).map((t) => (
-            <ToolTile key={t.name} t={t} />
-          ))}
+        <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.3em] text-primary/70">
+          {date}
         </div>
-        <div className="mt-auto px-4 pb-3">
-          <PromptBar compact />
-        </div>
-        <Dock />
+      </div>
+      <div className="mt-auto px-7 pb-10 text-center font-mono text-[9px] uppercase tracking-[0.34em] text-muted-foreground">
+        голова активна · 8 щупалец
       </div>
     </div>
   );
 }
 
-/* Main display: 1856x2160 */
-function MainScreen({ time }: { time: string }) {
+/* ГЛАВНЫЙ ЭКРАН — статичные обои, только погода + строка */
+function HomeContent({ time, wide }: { time: string; wide?: boolean }) {
   return (
-    <div className="relative h-[820px] w-[704px] overflow-hidden border border-primary/30 bg-background">
-      <GlitchBackdrop seed={20260815} lineCount={58} lineLength={30} skullOpacity={0.18} />
-      <div className="absolute inset-y-0 left-1/2 w-px bg-primary/10" />
-      <div className="relative z-10 flex h-full flex-col">
-        <StatusBar time={time} />
-        <div className="flex items-baseline justify-between px-5 pt-6">
-          <span className="font-display text-2xl uppercase tracking-[0.22em] text-foreground/90">
-            ОСЬМИНОГ - 0
-          </span>
-          <span className="font-mono text-[9px] uppercase tracking-[0.34em] text-primary/70">
-            автономный режим
-          </span>
-        </div>
-
-        <div className="grid flex-1 grid-cols-[1fr_260px] gap-4 px-5 pt-6">
-          <div>
-            <div className="mb-2 font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
-              щупальца
-            </div>
-            <div className="grid grid-cols-4 gap-2">
-              {TOOLS.map((t) => (
-                <ToolTile key={t.name} t={t} />
-              ))}
-            </div>
-            <div className="mt-6 border border-primary/20 bg-background/40 p-3 backdrop-blur-sm">
-              <div className="font-mono text-[9px] uppercase tracking-[0.3em] text-primary/70">
-                журнал головы
-              </div>
-              <div className="mt-2 space-y-1 font-mono text-[10px] text-muted-foreground">
-                <div>[роутер] запрос разобран · 3 щупальца выбраны</div>
-                <div>[swe] патч собран · ожидание подтверждения</div>
-                <div className="text-primary/70">[голова] локальный ответ готов</div>
-              </div>
-            </div>
-          </div>
-
-          <aside className="flex flex-col border border-primary/20 bg-background/40 backdrop-blur-sm">
-            <div className="border-b border-primary/20 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.3em] text-primary/70">
-              online · agentworld
-            </div>
-            <div className="flex-1 space-y-2 overflow-hidden p-3 font-mono text-[10px]">
-              <div className="text-foreground/85">&gt; собери отчёт по логам</div>
-              <div className="text-primary/70">[голова] запускаю ФАЙЛЫ + ПАМЯТЬ</div>
-              <div className="text-foreground/85">&gt; добавь график</div>
-              <div className="text-primary/70">[голова] щупальце SWE активно</div>
-            </div>
-          </aside>
-        </div>
-
-        <div className="px-5 pb-4 pt-4">
-          <PromptBar />
-          <div className="mt-2 flex justify-between font-mono text-[9px] uppercase tracking-[0.28em] text-muted-foreground/80">
-            <span>щупальца: 8 подключено</span>
-            <span>100% локально</span>
-          </div>
+    <div className="relative z-10 flex h-full flex-col">
+      <StatusBar time={time} />
+      <div className={cn("px-6 pt-10", wide && "px-12 pt-14")}>
+        <WeatherWidget wide={wide} />
+      </div>
+      <div className={cn("mt-auto px-6 pb-[18%]", wide && "px-12 pb-[14%]")}>
+        <PromptBar compact={!wide} />
+        <div className="mt-3 text-center font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground/80">
+          100% локально
         </div>
       </div>
+    </div>
+  );
+}
+
+function Device({
+  folded,
+  children,
+  animated,
+}: {
+  folded: boolean;
+  animated: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className={cn(
+        "relative overflow-hidden border border-primary/30 bg-background shadow-2xl",
+        folded ? "h-[820px] w-[332px] rounded-[38px]" : "h-[820px] w-[704px] rounded-[30px]",
+      )}
+    >
+      <GlitchBackdrop
+        animated={animated}
+        seed={folded ? 7311 : 20260815}
+        lineCount={folded ? 46 : 58}
+        lineLength={folded ? 12 : 30}
+        skullOpacity={animated ? 0.2 : 0.34}
+      />
+      {children}
     </div>
   );
 }
 
 function LauncherPrototype() {
-  const time = useClock();
+  const { time, date } = useClock();
   const [folded, setFolded] = useState(false);
+  const [locked, setLocked] = useState(false);
   const { theme, setTheme } = useTheme();
 
   return (
@@ -222,31 +186,39 @@ function LauncherPrototype() {
               лаунчер · z fold 6
             </h1>
             <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
-              прототип · обложка 968×2376 · экран 1856×2160
+              обои в заполнении · анимация только на блокировке
             </p>
           </div>
-          <div className="flex shrink-0 items-center gap-2">
-            {(["unfolded", "folded"] as const).map((m) => (
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            {[
+              { on: !folded, label: "раскрыт", act: () => setFolded(false) },
+              { on: folded, label: "сложен", act: () => setFolded(true) },
+              { on: locked, label: "блокировка", act: () => setLocked(!locked) },
+            ].map((b) => (
               <button
-                key={m}
+                key={b.label}
                 type="button"
-                onClick={() => setFolded(m === "folded")}
+                onClick={b.act}
                 className={cn(
-                  "border px-3 py-1 font-mono text-[9px] uppercase tracking-[0.28em] transition-colors",
-                  (m === "folded") === folded
+                  "rounded-full border px-3 py-1 font-mono text-[9px] uppercase tracking-[0.24em] transition-colors",
+                  b.on
                     ? "border-primary/70 bg-primary/10 text-primary"
                     : "border-primary/25 text-muted-foreground hover:text-foreground",
                 )}
               >
-                {m === "folded" ? "сложен" : "раскрыт"}
+                {b.label}
               </button>
             ))}
           </div>
         </header>
 
-        <div className="relative">
-          {folded ? <CoverScreen time={time} /> : <MainScreen time={time} />}
-        </div>
+        <Device folded={folded} animated={locked}>
+          {locked ? (
+            <LockContent time={time} date={date} />
+          ) : (
+            <HomeContent time={time} wide={!folded} />
+          )}
+        </Device>
 
         <div className="flex w-full flex-wrap items-center justify-center gap-1.5">
           {THEMES.map((t) => (
@@ -254,9 +226,8 @@ function LauncherPrototype() {
               key={t.slug}
               type="button"
               onClick={() => setTheme(t.slug as ThemeSlug)}
-              aria-label={t.name}
               className={cn(
-                "border px-2 py-1 font-mono text-[9px] uppercase tracking-[0.2em] transition-colors",
+                "rounded-full border px-3 py-1 font-mono text-[9px] uppercase tracking-[0.2em] transition-colors",
                 theme === t.slug
                   ? "border-primary/70 bg-primary/10 text-primary"
                   : "border-primary/20 text-muted-foreground hover:text-foreground",

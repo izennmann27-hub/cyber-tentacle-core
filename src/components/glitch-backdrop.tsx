@@ -31,26 +31,28 @@ export function GlitchBackdrop({
   lineCount = 60,
   lineLength = 18,
   skullOpacity = 0.16,
+  animated = true,
 }: {
   seed?: number;
   lineCount?: number;
   lineLength?: number;
   skullOpacity?: number;
+  animated?: boolean;
 }) {
   const lines = useMemo(() => glitchLines(lineCount, seed, lineLength), [lineCount, seed, lineLength]);
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
       <div
-        className="absolute left-1/2 top-1/2 h-[70%] w-[110%] -translate-x-1/2 -translate-y-1/2 animate-breathe"
+        className={
+          animated ? "absolute inset-0 animate-breathe" : "absolute inset-0"
+        }
         style={{
           backgroundImage: `url(${krakenSkull.url})`,
-          backgroundSize: "contain",
+          backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           opacity: skullOpacity,
-          filter: "grayscale(1) brightness(0.9)",
-          maskImage: "radial-gradient(56% 52% at 50% 48%, #000 40%, transparent 76%)",
-          WebkitMaskImage: "radial-gradient(56% 52% at 50% 48%, #000 40%, transparent 76%)",
+          filter: "grayscale(1) brightness(0.85) contrast(1.05)",
         }}
       />
       <div
@@ -63,6 +65,7 @@ export function GlitchBackdrop({
           WebkitMaskImage: "radial-gradient(ellipse at center, #000 35%, transparent 82%)",
         }}
       />
+      {animated ? (
       <div className="absolute inset-0 animate-streamUp">
         {[0, 1].map((k) => (
           <div key={k} className="px-3">
@@ -78,6 +81,7 @@ export function GlitchBackdrop({
           </div>
         ))}
       </div>
+      ) : null}
       <div className="absolute inset-0 scanlines" />
       <div
         className="absolute inset-0"
