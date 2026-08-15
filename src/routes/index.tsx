@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { THEMES, type ThemeSlug } from "@/lib/themes";
+import { LOCAL_MODELS, CLOUD_MODELS, REMOTE_MODELS } from "@/lib/models";
 import { useTheme } from "@/hooks/use-theme";
 import krakenSkull from "@/assets/kraken-skull.png.asset.json";
 import { TentaclesMenu } from "@/components/tentacles-menu";
@@ -268,6 +269,10 @@ function OctoTerminal() {
   );
 }
 
+type SettingsTab = "вид" | "локальные" | "облачные" | "сервер";
+
+const SETTINGS_TABS: SettingsTab[] = ["вид", "локальные", "облачные", "сервер"];
+
 function SettingsOverlay({
   theme,
   onPick,
@@ -277,6 +282,11 @@ function SettingsOverlay({
   onPick: (slug: ThemeSlug) => void;
   onClose: () => void;
 }) {
+  const [tab, setTab] = useState<SettingsTab>("вид");
+  const [local, setLocal] = useState(() => LOCAL_MODELS.map((m) => ({ ...m })));
+  const [cloud, setCloud] = useState(() => CLOUD_MODELS.map((m) => ({ ...m })));
+  const [remote, setRemote] = useState(() => REMOTE_MODELS.map((m) => ({ ...m })));
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <button
@@ -285,10 +295,10 @@ function SettingsOverlay({
         onClick={onClose}
         className="absolute inset-0 bg-background/80 backdrop-blur-sm"
       />
-      <div className="relative flex max-h-[82vh] w-full max-w-2xl flex-col border border-primary/30 bg-popover/95 shadow-2xl">
+      <div className="relative flex max-h-[86vh] w-full max-w-3xl flex-col border border-primary/30 bg-popover/95 shadow-2xl">
         <div className="flex items-center justify-between border-b border-primary/20 px-5 py-3">
           <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary/80">
-            настройки · внешний вид
+            настройки · {tab}
           </span>
           <button
             type="button"
@@ -299,6 +309,93 @@ function SettingsOverlay({
           </button>
         </div>
 
+        <div className="flex flex-wrap gap-1.5 border-b border-primary/15 px-5 py-3">
+          {SETTINGS_TABS.map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => setTab(s)}
+              className={`border px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.28em] transition-colors ${
+                s === tab
+                  ? "border-primary/70 bg-primary/10 text-primary"
+                  : "border-primary/20 text-muted-foreground hover:border-primary/50 hover:text-foreground"
+              }`}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+
+        {tab !== "вид" && (
+          <div className="overflow-y-auto p-5">
+            <div className="space-y-2">
+              {tab === "локальные" &&
+                local.map((m) => (
+                  <ModelRow
+                    key={m.id}
+                    title={m.name}
+                    meta={`${m.size} · ${m.quant} · локально`}
+                    role={m.role}
+                    state={m.running ? "запущена" : "остановлена"}
+                    stateOn={m.running}
+                    action={m.running ? "стоп" : "запуск"}
+                    onAction={() =>
+                      setLocal((prev) =>
+                        prev.map((x) => (x.id === m.id ? { ...x, running: !x.running } : x)),
+                      )
+                    }
+                  />
+                ))}
+              {tab === "облачные" &&
+                cloud.map((m) => (
+                  <ModelRow
+                    key={m.id}
+                    title={m.name}
+                    meta={`${m.vendor} · ключ ${m.keyHint}`}
+                    role={m.role}
+                    state={m.enabled ? "подключена" : "выключена"}
+                    stateOn={m.enabled}
+                    action={m.enabled ? "выкл" : "вкл"}
+                    onAction={() =>
+                      setCloud((prev) =>
+                        prev.map((x) => (x.id === m.id ? { ...x, enabled: !x.enabled } : x)),
+                      )
+                    }
+                  />
+                ))}
+              {tab === "сервер" &&
+                remote.map((m) => (
+                  <ModelRow
+                    key={m.id}
+                    title={m.name}
+                    meta={`${m.host} · ${m.gpu}`}
+                    role={m.role}
+                    state={m.online ? "канал открыт" : "нет связи"}
+                    stateOn={m.online}
+                    action={m.online ? "отключить" : "подключить"}
+                    onAction={() =>
+                      setRemote((prev) =>
+                        prev.map((x) => (x.id === m.id ? { ...x, online: !x.online } : x)),
+                      )
+                    }
+                  />
+                ))}
+            </div>
+            <button
+              type="button"
+              className="mt-4 w-full border border-primary/40 py-2 font-mono text-[10px] uppercase tracking-[0.3em] text-primary transition-colors hover:bg-primary/10"
+            >
+              +{" "}
+              {tab === "локальные"
+                ? "скачать модель локально"
+                : tab === "облачные"
+                  ? "добавить облачного провайдера"
+                  : "добавить удалённый сервер"}
+            </button>
+          </div>
+        )}
+
+        {tab === "вид" && (
         <div className="grid gap-2 overflow-y-auto p-5 sm:grid-cols-2">
           {THEMES.map((t) => {
             const active = t.slug === theme;
@@ -340,7 +437,58 @@ function SettingsOverlay({
             );
           })}
         </div>
+        )}
       </div>
+    </div>
+  );
+}
+
+function ModelRow({
+  title,
+  meta,
+  role,
+  state,
+  stateOn,
+  action,
+  onAction,
+}: {
+  title: string;
+  meta: string;
+  role: string;
+  state: string;
+  stateOn: boolean;
+  action: string;
+  onAction: () => void;
+}) {
+  return (
+    <div className="flex items-start gap-3 border border-primary/20 bg-background/40 p-3">
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-baseline gap-2">
+          <span className="font-display text-sm uppercase tracking-[0.12em] text-foreground">
+            {title}
+          </span>
+          <span
+            className={`font-mono text-[9px] uppercase tracking-[0.28em] ${
+              stateOn ? "text-primary" : "text-muted-foreground"
+            }`}
+          >
+            {stateOn ? "●" : "○"} {state}
+          </span>
+        </div>
+        <div className="font-mono text-[10px] text-primary/70">{meta}</div>
+        <p className="mt-1 font-mono text-[11px] leading-relaxed text-muted-foreground">{role}</p>
+      </div>
+      <button
+        type="button"
+        onClick={onAction}
+        className={`shrink-0 border px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.28em] transition-colors ${
+          stateOn
+            ? "border-primary/60 bg-primary/10 text-primary"
+            : "border-border/60 text-muted-foreground hover:border-primary/60 hover:text-primary"
+        }`}
+      >
+        {action}
+      </button>
     </div>
   );
 }
