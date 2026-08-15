@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { THEMES, type ThemeSlug } from "@/lib/themes";
 import { useTheme } from "@/hooks/use-theme";
 import krakenSkull from "@/assets/kraken-skull.png.asset.json";
+import { TentaclesMenu } from "@/components/tentacles-menu";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -68,7 +69,7 @@ function GlitchBackdrop() {
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
       <div
-        className="absolute inset-0 animate-breathe"
+        className="absolute inset-0"
         style={{
           backgroundImage: `url(${krakenSkull.url})`,
           backgroundSize: "cover",
@@ -128,16 +129,20 @@ function OctoTerminal() {
   const [log, setLog] = useState<Entry[]>([]);
   const idRef = useRef(1);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [tentaclesOpen, setTentaclesOpen] = useState(false);
   const { theme, setTheme } = useTheme();
 
   useEffect(() => {
-    if (!settingsOpen) return;
+    if (!settingsOpen && !tentaclesOpen) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setSettingsOpen(false);
+      if (e.key === "Escape") {
+        setSettingsOpen(false);
+        setTentaclesOpen(false);
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [settingsOpen]);
+  }, [settingsOpen, tentaclesOpen]);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -167,6 +172,13 @@ function OctoTerminal() {
             <span>ВЕРСИЯ 26</span>
             <button
               type="button"
+              onClick={() => setTentaclesOpen(true)}
+              className="border border-primary/30 px-2 py-1 text-[10px] tracking-[0.3em] text-primary/80 transition-colors hover:border-primary/70 hover:bg-primary/10"
+            >
+              щупальца
+            </button>
+            <button
+              type="button"
               onClick={() => setSettingsOpen(true)}
               aria-label="Настройки"
               className="grid h-8 w-8 place-items-center border border-primary/30 text-primary/80 transition-colors hover:border-primary/70 hover:bg-primary/10"
@@ -181,10 +193,6 @@ function OctoTerminal() {
 
         <section className="flex flex-1 flex-col justify-end px-6 pb-[24vh]">
           <div className="mx-auto w-full max-w-3xl">
-            <h1 className="mb-6 text-center font-display text-2xl uppercase text-foreground/90 sm:text-3xl">
-              локальная голова готова
-            </h1>
-
             {log.length > 0 && (
               <div className="mb-5 space-y-1.5 font-mono text-[11px]">
                 {log.map((e) => (
@@ -228,7 +236,13 @@ function OctoTerminal() {
             </form>
 
             <div className="mt-3 flex flex-wrap justify-center gap-x-6 gap-y-1 font-mono text-[10px] uppercase tracking-[0.28em] text-muted-foreground/80">
-              <span>щупальца: 8 подключено</span>
+              <button
+                type="button"
+                onClick={() => setTentaclesOpen(true)}
+                className="uppercase tracking-[0.28em] transition-colors hover:text-primary"
+              >
+                щупальца: 6 подключено
+              </button>
               <span>режим: автономный</span>
               <span>100% локально</span>
             </div>
@@ -248,6 +262,8 @@ function OctoTerminal() {
           onClose={() => setSettingsOpen(false)}
         />
       )}
+
+      {tentaclesOpen && <TentaclesMenu onClose={() => setTentaclesOpen(false)} />}
     </main>
   );
 }
