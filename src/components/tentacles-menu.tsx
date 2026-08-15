@@ -142,6 +142,7 @@ export function TentaclesMenu({ onClose }: { onClose: () => void }) {
             + подключить щупальце из сети
           </button>
         </div>
+        </>
       </aside>
     </div>
   );
