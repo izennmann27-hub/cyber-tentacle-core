@@ -53,8 +53,8 @@ export function TentaclesMenu({ onClose }: { onClose: () => void }) {
         className="absolute inset-0 bg-background/80 backdrop-blur-sm"
       />
 
-      <aside className="relative flex h-full w-full max-w-xl flex-col border-l border-primary/30 bg-popover/95">
-        {opened ? (
+      {opened && (
+        <div className="fixed inset-0 z-50 flex flex-col bg-background">
           <TentacleWorkspace
             t={opened}
             on={state[opened.id]}
@@ -64,8 +64,11 @@ export function TentaclesMenu({ onClose }: { onClose: () => void }) {
               setSettingsId(opened.id);
             }}
           />
-        ) : (
-          <>
+        </div>
+      )}
+
+      <aside className="relative flex h-full w-full max-w-xl flex-col border-l border-primary/30 bg-popover/95">
+        <>
         <div className="flex items-center justify-between border-b border-primary/20 px-5 py-3">
           <div>
             <div className="font-mono text-[10px] uppercase tracking-[0.4em] text-primary/80">
