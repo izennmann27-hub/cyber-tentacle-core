@@ -3,6 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { GlitchBackdrop } from "@/components/glitch-backdrop";
 import { cn } from "@/lib/utils";
+import krakenSkull from "@/assets/kraken-skull.png.asset.json";
+import wallAbyss from "@/assets/wall-abyss.jpg";
+import wallGrid from "@/assets/wall-grid.jpg";
 
 export const Route = createFileRoute("/launcher")({
   head: () => ({
@@ -29,17 +32,60 @@ const ACCENT_KEY = "kraken.launcher.accent";
 const DEFAULT_ACCENT = "#8fb4ff";
 const ACCENTS = ["#8fb4ff", "#6f5cff", "#4fd8c4", "#00ff62", "#fcee0a", "#ff7a45", "#ff5ca8", "#e6e9f2"];
 
-function useAccent() {
-  const [accent, setAccent] = useState(DEFAULT_ACCENT);
+const WALLPAPERS = [
+  { id: "skull", name: "Осьминог-череп", url: krakenSkull.url },
+  { id: "abyss", name: "Бездна", url: wallAbyss },
+  { id: "grid", name: "Сетка", url: wallGrid },
+] as const;
+
+type WallId = (typeof WALLPAPERS)[number]["id"];
+
+const GRIDS = ["4 x 5", "4 x 6", "5 x 5", "5 x 6"] as const;
+type GridId = (typeof GRIDS)[number];
+
+interface LauncherPrefs {
+  accent: string;
+  hue: number;
+  home: WallId;
+  lock: WallId;
+  grid: GridId;
+}
+
+const PREFS_KEY = "kraken.launcher.prefs";
+const DEFAULT_PREFS: LauncherPrefs = {
+  accent: DEFAULT_ACCENT,
+  hue: 222,
+  home: "skull",
+  lock: "skull",
+  grid: "4 x 5",
+};
+
+function wallUrl(id: WallId) {
+  return (WALLPAPERS.find((w) => w.id === id) ?? WALLPAPERS[0]).url;
+}
+
+function usePrefs() {
+  const [prefs, setPrefs] = useState<LauncherPrefs>(DEFAULT_PREFS);
   useEffect(() => {
-    const v = window.localStorage.getItem(ACCENT_KEY);
-    if (v) setAccent(v);
+    try {
+      const raw = window.localStorage.getItem(PREFS_KEY);
+      if (raw) setPrefs({ ...DEFAULT_PREFS, ...(JSON.parse(raw) as Partial<LauncherPrefs>) });
+      else {
+        const legacy = window.localStorage.getItem(ACCENT_KEY);
+        if (legacy) setPrefs({ ...DEFAULT_PREFS, accent: legacy });
+      }
+    } catch {
+      /* ignore corrupt prefs */
+    }
   }, []);
-  const update = (v: string) => {
-    setAccent(v);
-    window.localStorage.setItem(ACCENT_KEY, v);
+  const update = (patch: Partial<LauncherPrefs>) => {
+    setPrefs((prev) => {
+      const next = { ...prev, ...patch };
+      window.localStorage.setItem(PREFS_KEY, JSON.stringify(next));
+      return next;
+    });
   };
-  return { accent, setAccent: update };
+  return { prefs, update };
 }
 
 function useClock() {
@@ -255,12 +301,12 @@ function HomeContent({ time, wide }: { time: string; wide?: boolean }) {
 }
 
 function SettingsOverlay({
-  accent,
-  onAccent,
+  prefs,
+  update,
   onClose,
 }: {
-  accent: string;
-  onAccent: (v: string) => void;
+  prefs: LauncherPrefs;
+  update: (patch: Partial<LauncherPrefs>) => void;
   onClose: () => void;
 }) {
   useEffect(() => {
@@ -270,52 +316,184 @@ function SettingsOverlay({
   }, [onClose]);
 
   return (
-    <div className="absolute inset-0 z-30 flex items-end bg-background/70 backdrop-blur-md" onClick={onClose}>
-      <div
-        className="w-full rounded-t-[28px] border-t border-primary/25 bg-background/85 p-6"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between">
-          <h2 className="font-display text-sm uppercase tracking-[0.24em] text-foreground/90">настройки</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-full border border-primary/30 px-3 py-1 font-mono text-[9px] uppercase tracking-[0.24em] text-primary"
-          >
-            закрыть
-          </button>
-        </div>
-
-        <div className="mt-5 font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
-          акцентный цвет
-        </div>
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          {ACCENTS.map((c) => (
-            <button
-              key={c}
-              type="button"
-              aria-label={`Акцент ${c}`}
-              onClick={() => onAccent(c)}
-              className={cn(
-                "h-7 w-7 rounded-full ring-1 transition-transform",
-                accent.toLowerCase() === c.toLowerCase()
-                  ? "scale-110 ring-foreground/70"
-                  : "ring-foreground/20 hover:scale-105",
-              )}
-              style={{ background: c }}
-            />
-          ))}
-          <label className="ml-2 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.24em] text-muted-foreground">
-            свой
-            <input
-              type="color"
-              value={accent}
-              onChange={(e) => onAccent(e.target.value)}
-              className="h-7 w-9 cursor-pointer rounded-md border border-primary/30 bg-transparent"
-            />
-          </label>
-        </div>
+    <div
+      className="absolute inset-0 z-30 flex flex-col bg-background/95 backdrop-blur-xl"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="flex items-center justify-between px-5 pt-4">
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Назад"
+          className="flex h-10 w-10 items-center justify-center rounded-full text-foreground/80 transition-colors hover:bg-foreground/10"
+        >
+          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M15 5l-7 7 7 7" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+        <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
+          осьминог · лаунчер
+        </span>
+        <span className="h-10 w-10" />
       </div>
+
+      <div className="flex-1 overflow-y-auto px-5 pb-10">
+        <h2 className="pb-5 pt-2 font-display text-[34px] leading-tight text-foreground/95">Настройки</h2>
+
+        <OneUiSection title="Обои">
+          <WallpaperRow
+            label="Рабочий стол"
+            value={prefs.home}
+            onChange={(home) => update({ home })}
+          />
+          <div className="h-px bg-foreground/10" />
+          <WallpaperRow
+            label="Экран блокировки"
+            value={prefs.lock}
+            onChange={(lock) => update({ lock })}
+          />
+        </OneUiSection>
+
+        <OneUiSection title="Главный экран">
+          <div className="px-5 py-4">
+            <div className="text-[14px] text-foreground/90">Сетка приложений</div>
+            <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+              {prefs.grid}
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {GRIDS.map((g) => (
+                <button
+                  key={g}
+                  type="button"
+                  onClick={() => update({ grid: g })}
+                  className={cn(
+                    "rounded-full px-4 py-2 text-[12px] transition-colors",
+                    prefs.grid === g
+                      ? "bg-primary/20 text-primary ring-1 ring-primary/50"
+                      : "bg-foreground/8 text-foreground/70 hover:bg-foreground/15",
+                  )}
+                >
+                  {g}
+                </button>
+              ))}
+            </div>
+            <GridPreview grid={prefs.grid} />
+          </div>
+        </OneUiSection>
+
+        <OneUiSection title="Цвет">
+          <div className="px-5 py-4">
+            <div className="flex items-center justify-between">
+              <div className="text-[14px] text-foreground/90">Акцентный цвет</div>
+              <span
+                className="h-7 w-7 rounded-full ring-1 ring-foreground/25"
+                style={{ background: prefs.accent }}
+              />
+            </div>
+            <input
+              type="range"
+              min={0}
+              max={360}
+              value={prefs.hue}
+              aria-label="Оттенок акцентного цвета"
+              onChange={(e) => {
+                const hue = Number(e.target.value);
+                update({ hue, accent: `hsl(${hue} 78% 70%)` });
+              }}
+              className="mt-5 h-2 w-full cursor-pointer appearance-none rounded-full accent-[var(--primary)]"
+              style={{
+                background:
+                  "linear-gradient(90deg, hsl(0 78% 70%), hsl(60 78% 70%), hsl(120 78% 70%), hsl(180 78% 70%), hsl(240 78% 70%), hsl(300 78% 70%), hsl(360 78% 70%))",
+              }}
+            />
+            <div className="mt-5 flex flex-wrap items-center gap-2">
+              {ACCENTS.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  aria-label={`Акцент ${c}`}
+                  onClick={() => update({ accent: c })}
+                  className={cn(
+                    "h-8 w-8 rounded-full ring-1 transition-transform",
+                    prefs.accent.toLowerCase() === c.toLowerCase()
+                      ? "scale-110 ring-foreground/70"
+                      : "ring-foreground/20 hover:scale-105",
+                  )}
+                  style={{ background: c }}
+                />
+              ))}
+              <label className="ml-1 flex items-center gap-2 text-[12px] text-muted-foreground">
+                свой
+                <input
+                  type="color"
+                  value={prefs.accent.startsWith("#") ? prefs.accent : DEFAULT_ACCENT}
+                  onChange={(e) => update({ accent: e.target.value })}
+                  className="h-8 w-10 cursor-pointer rounded-full border border-foreground/20 bg-transparent"
+                />
+              </label>
+            </div>
+          </div>
+        </OneUiSection>
+      </div>
+    </div>
+  );
+}
+
+function OneUiSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="mb-6">
+      <h3 className="mb-2 px-2 text-[13px] text-primary/85">{title}</h3>
+      <div className="overflow-hidden rounded-[26px] bg-foreground/[0.07] ring-1 ring-foreground/10">
+        {children}
+      </div>
+    </section>
+  );
+}
+
+function WallpaperRow({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: WallId;
+  onChange: (v: WallId) => void;
+}) {
+  return (
+    <div className="px-5 py-4">
+      <div className="text-[14px] text-foreground/90">{label}</div>
+      <div className="mt-3 flex gap-3">
+        {WALLPAPERS.map((w) => (
+          <button
+            key={w.id}
+            type="button"
+            onClick={() => onChange(w.id)}
+            aria-label={`${label}: ${w.name}`}
+            className={cn(
+              "h-28 w-[68px] shrink-0 overflow-hidden rounded-[18px] bg-cover bg-center ring-1 transition-transform",
+              value === w.id ? "scale-[1.03] ring-2 ring-primary" : "ring-foreground/15 hover:scale-[1.02]",
+            )}
+            style={{ backgroundImage: `url(${w.url})` }}
+          />
+        ))}
+      </div>
+      <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+        {WALLPAPERS.find((w) => w.id === value)?.name}
+      </div>
+    </div>
+  );
+}
+
+function GridPreview({ grid }: { grid: GridId }) {
+  const [cols, rows] = grid.split(" x ").map(Number);
+  return (
+    <div
+      className="mt-4 grid w-[132px] gap-1.5 rounded-[18px] bg-foreground/[0.06] p-3 ring-1 ring-foreground/10"
+      style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
+    >
+      {Array.from({ length: cols * rows }).map((_, i) => (
+        <span key={i} className="aspect-square rounded-[6px] bg-primary/35" />
+      ))}
     </div>
   );
 }
@@ -325,7 +503,8 @@ function LauncherPrototype() {
   const [wide, setWide] = useState(true);
   const [locked, setLocked] = useState(false);
   const [settings, setSettings] = useState(false);
-  const { accent, setAccent } = useAccent();
+  const { prefs, update } = usePrefs();
+  const accent = prefs.accent;
 
   useEffect(() => {
     setLocked(new URLSearchParams(window.location.search).has("lock"));
@@ -353,6 +532,7 @@ function LauncherPrototype() {
     >
       <GlitchBackdrop
         animated={locked}
+        wallpaper={wallUrl(locked ? prefs.lock : prefs.home)}
         seed={wide ? 20260815 : 7311}
         lineCount={wide ? 58 : 46}
         lineLength={wide ? 30 : 12}
@@ -360,7 +540,7 @@ function LauncherPrototype() {
       />
       {locked ? <LockContent time={time} date={date} /> : <HomeContent time={time} wide={wide} />}
       {settings ? (
-        <SettingsOverlay accent={accent} onAccent={setAccent} onClose={() => setSettings(false)} />
+        <SettingsOverlay prefs={prefs} update={update} onClose={() => setSettings(false)} />
       ) : null}
     </main>
   );
