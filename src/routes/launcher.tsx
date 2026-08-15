@@ -161,19 +161,64 @@ function WeatherWidget({ wide }: { wide?: boolean }) {
   );
 }
 
+interface Task {
+  id: number;
+  text: string;
+}
+
 function PromptBar({ compact }: { compact?: boolean }) {
+  const [value, setValue] = useState("");
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const idRef = useRef(0);
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const text = value.trim();
+    if (!text) return;
+    idRef.current += 1;
+    setTasks((prev) => [{ id: idRef.current, text }, ...prev].slice(0, 3));
+    setValue("");
+  };
+
   return (
-    <form
-      onSubmit={(e) => e.preventDefault()}
-      className="flex items-center gap-3 rounded-full border border-primary/30 bg-background/45 px-5 py-3 backdrop-blur-md transition-colors focus-within:border-primary/70"
-    >
-      <span className="font-mono text-[10px] text-primary/60">▌</span>
-      <input
-        aria-label="Запрос к голове"
-        placeholder={compact ? "спросить голову" : "опишите задачу — голова выберет щупальца"}
-        className="w-full bg-transparent font-mono text-[11px] text-foreground placeholder:text-muted-foreground/70 focus:outline-none"
-      />
-    </form>
+    <div onClick={(e) => e.stopPropagation()}>
+      {tasks.length ? (
+        <div className="mb-3 space-y-2">
+          {tasks.map((t) => (
+            <div
+              key={t.id}
+              className="rounded-[20px] border border-primary/20 bg-background/45 px-4 py-2 backdrop-blur-md"
+            >
+              <div className="font-mono text-[9px] uppercase tracking-[0.28em] text-primary/70">
+                голова · принято
+              </div>
+              <div className="mt-1 truncate font-mono text-[11px] text-foreground/90">{t.text}</div>
+            </div>
+          ))}
+        </div>
+      ) : null}
+      <form
+        onSubmit={submit}
+        className="flex items-center gap-3 rounded-full border border-primary/30 bg-background/45 px-5 py-3 backdrop-blur-md transition-colors focus-within:border-primary/70"
+      >
+        <span className="font-mono text-[10px] text-primary/60">▌</span>
+        <input
+          aria-label="Задача или вопрос голове"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          enterKeyHint="send"
+          placeholder={compact ? "задача или вопрос" : "опишите задачу или задайте вопрос голове"}
+          className="w-full bg-transparent font-mono text-[11px] text-foreground placeholder:text-muted-foreground/70 focus:outline-none"
+        />
+        <button
+          type="submit"
+          aria-label="Отправить голове"
+          className="shrink-0 rounded-full border border-primary/40 px-3 py-1 font-mono text-[9px] uppercase tracking-[0.2em] text-primary transition-colors hover:bg-primary/10"
+        >
+          ↵
+        </button>
+      </form>
+    </div>
   );
 }
 
@@ -209,37 +254,13 @@ function HomeContent({ time, wide }: { time: string; wide?: boolean }) {
   );
 }
 
-function GearButton({ onClick }: { onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      aria-label="Настройки лаунчера"
-      onClick={onClick}
-      className="absolute right-4 top-3 z-20 rounded-full border border-primary/25 bg-background/40 p-2 text-primary/70 backdrop-blur-md transition-colors hover:text-primary"
-    >
-      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.6">
-        <circle cx="12" cy="12" r="3.2" />
-        <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6" />
-      </svg>
-    </button>
-  );
-}
-
 function SettingsOverlay({
   accent,
   onAccent,
-  folded,
-  onFolded,
-  locked,
-  onLocked,
   onClose,
 }: {
   accent: string;
   onAccent: (v: string) => void;
-  folded: boolean;
-  onFolded: (v: boolean) => void;
-  locked: boolean;
-  onLocked: (v: boolean) => void;
   onClose: () => void;
 }) {
   useEffect(() => {
@@ -249,8 +270,11 @@ function SettingsOverlay({
   }, [onClose]);
 
   return (
-    <div className="absolute inset-0 z-30 flex items-end bg-background/70 backdrop-blur-md">
-      <div className="w-full rounded-t-[28px] border-t border-primary/25 bg-background/85 p-6">
+    <div className="absolute inset-0 z-30 flex items-end bg-background/70 backdrop-blur-md" onClick={onClose}>
+      <div
+        className="w-full rounded-t-[28px] border-t border-primary/25 bg-background/85 p-6"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between">
           <h2 className="font-display text-sm uppercase tracking-[0.24em] text-foreground/90">настройки</h2>
           <button
@@ -291,31 +315,6 @@ function SettingsOverlay({
             />
           </label>
         </div>
-
-        <div className="mt-6 font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
-          режим прототипа
-        </div>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {[
-            { on: !folded, label: "раскрыт", act: () => onFolded(false) },
-            { on: folded, label: "сложен", act: () => onFolded(true) },
-            { on: locked, label: "блокировка", act: () => onLocked(!locked) },
-          ].map((b) => (
-            <button
-              key={b.label}
-              type="button"
-              onClick={b.act}
-              className={cn(
-                "rounded-full border px-3 py-1 font-mono text-[9px] uppercase tracking-[0.24em] transition-colors",
-                b.on
-                  ? "border-primary/70 bg-primary/10 text-primary"
-                  : "border-primary/25 text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {b.label}
-            </button>
-          ))}
-        </div>
       </div>
     </div>
   );
@@ -323,14 +322,24 @@ function SettingsOverlay({
 
 function LauncherPrototype() {
   const { time, date } = useClock();
-  const [folded, setFolded] = useState(false);
+  const [wide, setWide] = useState(true);
   const [locked, setLocked] = useState(false);
   const [settings, setSettings] = useState(false);
   const { accent, setAccent } = useAccent();
 
+  useEffect(() => {
+    setLocked(new URLSearchParams(window.location.search).has("lock"));
+    const mq = window.matchMedia("(min-width: 700px)");
+    const apply = () => setWide(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+
   return (
     <main
       data-theme="octo"
+      onClick={() => setSettings(true)}
       className="relative h-screen w-full overflow-hidden bg-background"
       style={
         {
@@ -340,33 +349,17 @@ function LauncherPrototype() {
         } as React.CSSProperties
       }
     >
-      <div
-        className={cn(
-          "relative mx-auto h-full overflow-hidden bg-background",
-          folded ? "max-w-[420px]" : "max-w-[900px]",
-        )}
-      >
-        <GlitchBackdrop
-          animated={locked}
-          seed={folded ? 7311 : 20260815}
-          lineCount={folded ? 46 : 58}
-          lineLength={folded ? 12 : 30}
-          skullOpacity={locked ? 0.2 : 0.34}
-        />
-        <GearButton onClick={() => setSettings(true)} />
-        {locked ? <LockContent time={time} date={date} /> : <HomeContent time={time} wide={!folded} />}
-        {settings ? (
-          <SettingsOverlay
-            accent={accent}
-            onAccent={setAccent}
-            folded={folded}
-            onFolded={setFolded}
-            locked={locked}
-            onLocked={setLocked}
-            onClose={() => setSettings(false)}
-          />
-        ) : null}
-      </div>
+      <GlitchBackdrop
+        animated={locked}
+        seed={wide ? 20260815 : 7311}
+        lineCount={wide ? 58 : 46}
+        lineLength={wide ? 30 : 12}
+        skullOpacity={locked ? 0.2 : 0.34}
+      />
+      {locked ? <LockContent time={time} date={date} /> : <HomeContent time={time} wide={wide} />}
+      {settings ? (
+        <SettingsOverlay accent={accent} onAccent={setAccent} onClose={() => setSettings(false)} />
+      ) : null}
     </main>
   );
 }
