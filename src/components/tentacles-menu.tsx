@@ -192,11 +192,16 @@ function Row({
             {t.size}
           </span>
         </div>
-        <div className="font-mono text-[10px] text-primary/70">{t.model}</div>
+        <div className="font-mono text-[10px] text-primary/70">
+          {t.title} · {t.model}
+        </div>
         <p className="mt-1 font-mono text-[11px] leading-relaxed text-muted-foreground">{t.role}</p>
-        <span className="mt-1 inline-block font-mono text-[9px] uppercase tracking-[0.28em] text-primary/60">
-          открыть окно →
-        </span>
+        <div className="mt-1 flex flex-wrap items-center gap-2 font-mono text-[9px] uppercase tracking-[0.28em]">
+          <span className="text-primary/60">открыть окно →</span>
+          <span className="text-muted-foreground/70">
+            :{BACKENDS[t.backend].port} · {t.endpoints.length} точек · {t.tools.length} tools
+          </span>
+        </div>
       </div>
       </button>
 
