@@ -32,14 +32,17 @@ export function GlitchBackdrop({
   lineLength = 18,
   skullOpacity = 0.16,
   animated = true,
+  wallpaper,
 }: {
   seed?: number;
   lineCount?: number;
   lineLength?: number;
   skullOpacity?: number;
   animated?: boolean;
+  wallpaper?: string;
 }) {
   const lines = useMemo(() => glitchLines(lineCount, seed, lineLength), [lineCount, seed, lineLength]);
+  const bg = wallpaper ?? krakenSkull.url;
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
       <div
@@ -47,7 +50,7 @@ export function GlitchBackdrop({
           animated ? "absolute inset-0 animate-breathe" : "absolute inset-0"
         }
         style={{
-          backgroundImage: `url(${krakenSkull.url})`,
+          backgroundImage: `url(${bg})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
