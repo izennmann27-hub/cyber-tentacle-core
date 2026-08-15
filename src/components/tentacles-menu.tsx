@@ -6,6 +6,7 @@ import {
   type TentacleDef,
 } from "@/lib/tentacles";
 import { TentacleWorkspace } from "@/components/tentacle-workspace";
+import { BACKENDS } from "@/lib/octo-endpoints";
 
 interface TSettings {
   auto: boolean;
