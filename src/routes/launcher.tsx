@@ -1,8 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { GlitchBackdrop } from "@/components/glitch-backdrop";
-import { useTheme } from "@/hooks/use-theme";
-import { THEMES, type ThemeSlug } from "@/lib/themes";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/launcher")({
@@ -12,7 +10,7 @@ export const Route = createFileRoute("/launcher")({
       {
         name: "description",
         content:
-          "Прототип киберпанк-лаунчера Осьминога для Samsung Galaxy Z Fold 6: экран блокировки с анимацией и чистый главный экран с виджетом погоды и строкой к голове.",
+          "Прототип киберпанк-лаунчера Осьминога для Samsung Galaxy Z Fold 6: экран блокировки с анимацией и главный экран с виджетом погоды и строкой к голове.",
       },
       { property: "og:title", content: "ОСЬМИНОГ // лаунчер Z Fold 6" },
       {
@@ -25,6 +23,23 @@ export const Route = createFileRoute("/launcher")({
   }),
   component: LauncherPrototype,
 });
+
+const ACCENT_KEY = "kraken.launcher.accent";
+const DEFAULT_ACCENT = "#8fb4ff";
+const ACCENTS = ["#8fb4ff", "#6f5cff", "#4fd8c4", "#00ff62", "#fcee0a", "#ff7a45", "#ff5ca8", "#e6e9f2"];
+
+function useAccent() {
+  const [accent, setAccent] = useState(DEFAULT_ACCENT);
+  useEffect(() => {
+    const v = window.localStorage.getItem(ACCENT_KEY);
+    if (v) setAccent(v);
+  }, []);
+  const update = (v: string) => {
+    setAccent(v);
+    window.localStorage.setItem(ACCENT_KEY, v);
+  };
+  return { accent, setAccent: update };
+}
 
 function useClock() {
   const [t, setT] = useState({ time: "--:--", date: "" });
@@ -105,18 +120,13 @@ function PromptBar({ compact }: { compact?: boolean }) {
   );
 }
 
-/* ЭКРАН БЛОКИРОВКИ — анимированные обои */
 function LockContent({ time, date }: { time: string; date: string }) {
   return (
     <div className="relative z-10 flex h-full flex-col">
       <StatusBar time={time} />
       <div className="px-7 pt-16 text-center">
-        <div className="font-display text-6xl leading-none tracking-[0.08em] text-foreground/92">
-          {time}
-        </div>
-        <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.3em] text-primary/70">
-          {date}
-        </div>
+        <div className="font-display text-6xl leading-none tracking-[0.08em] text-foreground/92">{time}</div>
+        <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.3em] text-primary/70">{date}</div>
       </div>
       <div className="mt-auto px-7 pb-10 text-center font-mono text-[9px] uppercase tracking-[0.34em] text-muted-foreground">
         голова активна · 8 щупалец
@@ -125,7 +135,6 @@ function LockContent({ time, date }: { time: string; date: string }) {
   );
 }
 
-/* ГЛАВНЫЙ ЭКРАН — статичные обои, только погода + строка */
 function HomeContent({ time, wide }: { time: string; wide?: boolean }) {
   return (
     <div className="relative z-10 flex h-full flex-col">
@@ -143,30 +152,114 @@ function HomeContent({ time, wide }: { time: string; wide?: boolean }) {
   );
 }
 
-function Device({
-  folded,
-  children,
-  animated,
-}: {
-  folded: boolean;
-  animated: boolean;
-  children: React.ReactNode;
-}) {
+function GearButton({ onClick }: { onClick: () => void }) {
   return (
-    <div
-      className={cn(
-        "relative overflow-hidden border border-primary/30 bg-background shadow-2xl",
-        folded ? "h-[820px] w-[332px] rounded-[38px]" : "h-[820px] w-[704px] rounded-[30px]",
-      )}
+    <button
+      type="button"
+      aria-label="Настройки лаунчера"
+      onClick={onClick}
+      className="absolute right-4 top-3 z-20 rounded-full border border-primary/25 bg-background/40 p-2 text-primary/70 backdrop-blur-md transition-colors hover:text-primary"
     >
-      <GlitchBackdrop
-        animated={animated}
-        seed={folded ? 7311 : 20260815}
-        lineCount={folded ? 46 : 58}
-        lineLength={folded ? 12 : 30}
-        skullOpacity={animated ? 0.2 : 0.34}
-      />
-      {children}
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.6">
+        <circle cx="12" cy="12" r="3.2" />
+        <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6" />
+      </svg>
+    </button>
+  );
+}
+
+function SettingsOverlay({
+  accent,
+  onAccent,
+  folded,
+  onFolded,
+  locked,
+  onLocked,
+  onClose,
+}: {
+  accent: string;
+  onAccent: (v: string) => void;
+  folded: boolean;
+  onFolded: (v: boolean) => void;
+  locked: boolean;
+  onLocked: (v: boolean) => void;
+  onClose: () => void;
+}) {
+  useEffect(() => {
+    const h = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", h);
+    return () => window.removeEventListener("keydown", h);
+  }, [onClose]);
+
+  return (
+    <div className="absolute inset-0 z-30 flex items-end bg-background/70 backdrop-blur-md">
+      <div className="w-full rounded-t-[28px] border-t border-primary/25 bg-background/85 p-6">
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-sm uppercase tracking-[0.24em] text-foreground/90">настройки</h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full border border-primary/30 px-3 py-1 font-mono text-[9px] uppercase tracking-[0.24em] text-primary"
+          >
+            закрыть
+          </button>
+        </div>
+
+        <div className="mt-5 font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
+          акцентный цвет
+        </div>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          {ACCENTS.map((c) => (
+            <button
+              key={c}
+              type="button"
+              aria-label={`Акцент ${c}`}
+              onClick={() => onAccent(c)}
+              className={cn(
+                "h-7 w-7 rounded-full ring-1 transition-transform",
+                accent.toLowerCase() === c.toLowerCase()
+                  ? "scale-110 ring-foreground/70"
+                  : "ring-foreground/20 hover:scale-105",
+              )}
+              style={{ background: c }}
+            />
+          ))}
+          <label className="ml-2 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.24em] text-muted-foreground">
+            свой
+            <input
+              type="color"
+              value={accent}
+              onChange={(e) => onAccent(e.target.value)}
+              className="h-7 w-9 cursor-pointer rounded-md border border-primary/30 bg-transparent"
+            />
+          </label>
+        </div>
+
+        <div className="mt-6 font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
+          режим прототипа
+        </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {[
+            { on: !folded, label: "раскрыт", act: () => onFolded(false) },
+            { on: folded, label: "сложен", act: () => onFolded(true) },
+            { on: locked, label: "блокировка", act: () => onLocked(!locked) },
+          ].map((b) => (
+            <button
+              key={b.label}
+              type="button"
+              onClick={b.act}
+              className={cn(
+                "rounded-full border px-3 py-1 font-mono text-[9px] uppercase tracking-[0.24em] transition-colors",
+                b.on
+                  ? "border-primary/70 bg-primary/10 text-primary"
+                  : "border-primary/25 text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {b.label}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -175,68 +268,47 @@ function LauncherPrototype() {
   const { time, date } = useClock();
   const [folded, setFolded] = useState(false);
   const [locked, setLocked] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const [settings, setSettings] = useState(false);
+  const { accent, setAccent } = useAccent();
 
   return (
-    <main className="relative min-h-screen w-full overflow-x-hidden bg-background px-4 py-6">
-      <div className="mx-auto flex max-w-5xl flex-col items-center gap-5">
-        <header className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 sm:flex sm:justify-between">
-          <div className="min-w-0">
-            <h1 className="truncate font-display text-lg uppercase tracking-[0.22em] text-foreground/90">
-              лаунчер · z fold 6
-            </h1>
-            <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
-              обои в заполнении · анимация только на блокировке
-            </p>
-          </div>
-          <div className="flex shrink-0 flex-wrap items-center gap-2">
-            {[
-              { on: !folded, label: "раскрыт", act: () => setFolded(false) },
-              { on: folded, label: "сложен", act: () => setFolded(true) },
-              { on: locked, label: "блокировка", act: () => setLocked(!locked) },
-            ].map((b) => (
-              <button
-                key={b.label}
-                type="button"
-                onClick={b.act}
-                className={cn(
-                  "rounded-full border px-3 py-1 font-mono text-[9px] uppercase tracking-[0.24em] transition-colors",
-                  b.on
-                    ? "border-primary/70 bg-primary/10 text-primary"
-                    : "border-primary/25 text-muted-foreground hover:text-foreground",
-                )}
-              >
-                {b.label}
-              </button>
-            ))}
-          </div>
-        </header>
-
-        <Device folded={folded} animated={locked}>
-          {locked ? (
-            <LockContent time={time} date={date} />
-          ) : (
-            <HomeContent time={time} wide={!folded} />
-          )}
-        </Device>
-
-        <div className="flex w-full flex-wrap items-center justify-center gap-1.5">
-          {THEMES.map((t) => (
-            <button
-              key={t.slug}
-              type="button"
-              onClick={() => setTheme(t.slug as ThemeSlug)}
-              className={cn(
-                "rounded-full border px-3 py-1 font-mono text-[9px] uppercase tracking-[0.2em] transition-colors",
-                theme === t.slug
-                  ? "border-primary/70 bg-primary/10 text-primary"
-                  : "border-primary/20 text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {t.name}
-            </button>
-          ))}
-        </div>
+    <main
+      data-theme="octo"
+      className="relative h-screen w-full overflow-hidden bg-background"
+      style={
+        {
+          "--primary": accent,
+          "--accent": accent,
+          "--glow": accent,
+        } as React.CSSProperties
+      }
+    >
+      <div
+        className={cn(
+          "relative mx-auto h-full overflow-hidden bg-background",
+          folded ? "max-w-[420px]" : "max-w-[900px]",
+        )}
+      >
+        <GlitchBackdrop
+          animated={locked}
+          seed={folded ? 7311 : 20260815}
+          lineCount={folded ? 46 : 58}
+          lineLength={folded ? 12 : 30}
+          skullOpacity={locked ? 0.2 : 0.34}
+        />
+        <GearButton onClick={() => setSettings(true)} />
+        {locked ? <LockContent time={time} date={date} /> : <HomeContent time={time} wide={!folded} />}
+        {settings ? (
+          <SettingsOverlay
+            accent={accent}
+            onAccent={setAccent}
+            folded={folded}
+            onFolded={setFolded}
+            locked={locked}
+            onLocked={setLocked}
+            onClose={() => setSettings(false)}
+          />
+        ) : null}
       </div>
     </main>
   );
