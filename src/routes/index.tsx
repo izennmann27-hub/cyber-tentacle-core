@@ -68,16 +68,16 @@ function GlitchBackdrop() {
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
       <div
-        className="absolute left-1/2 top-1/2 h-[min(760px,86vh)] w-[min(1100px,92vw)] -translate-x-1/2 -translate-y-1/2 animate-breathe"
+        className="absolute inset-0 animate-breathe"
         style={{
           backgroundImage: `url(${krakenSkull.url})`,
-          backgroundSize: "contain",
+          backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-          opacity: 0.2,
-          filter: "grayscale(1) brightness(0.9)",
-          maskImage: "radial-gradient(56% 52% at 50% 48%, #000 40%, transparent 76%)",
-          WebkitMaskImage: "radial-gradient(56% 52% at 50% 48%, #000 40%, transparent 76%)",
+          opacity: 0.22,
+          filter: "grayscale(1) brightness(0.85) contrast(1.05)",
+          maskImage: "radial-gradient(ellipse at 50% 55%, #000 30%, transparent 78%)",
+          WebkitMaskImage: "radial-gradient(ellipse at 50% 55%, #000 30%, transparent 78%)",
         }}
       />
       <div
