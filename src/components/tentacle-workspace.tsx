@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import type { TentacleDef } from "@/lib/tentacles";
+import { TentacleIcon } from "@/components/tentacle-icon";
 import krakenSkull from "@/assets/kraken-skull.png.asset.json";
 import {
   BACKENDS,
@@ -137,8 +138,9 @@ export function TentacleWorkspace({
         </button>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <span className="font-display text-sm uppercase tracking-[0.14em] text-foreground">
-              {t.glyph} {t.name}
+            <span className="flex items-center gap-2 font-display text-sm uppercase tracking-[0.14em] text-foreground">
+              <TentacleIcon id={t.id} className="h-4 w-4 text-primary" />
+              {t.name}
             </span>
             <span className="font-mono text-[9px] uppercase tracking-[0.24em] text-muted-foreground/80">
               {t.title}
