@@ -5,6 +5,7 @@ import { LOCAL_MODELS, CLOUD_MODELS, REMOTE_MODELS } from "@/lib/models";
 import { useTheme } from "@/hooks/use-theme";
 import krakenSkull from "@/assets/kraken-skull.png.asset.json";
 import { TentaclesMenu } from "@/components/tentacles-menu";
+import { TENTACLES } from "@/lib/tentacles";
 
 export const Route = createFileRoute("/")({
   head: () => ({
