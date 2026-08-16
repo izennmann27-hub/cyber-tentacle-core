@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import type { TentacleDef } from "@/lib/tentacles";
+import krakenSkull from "@/assets/kraken-skull.png.asset.json";
 import {
   BACKENDS,
   endpointUrl,
@@ -345,6 +346,7 @@ data: {"type":"done","status":"ok"}`}
           </Section>
         </div>
       )}
+      </div>
     </div>
   );
 }
