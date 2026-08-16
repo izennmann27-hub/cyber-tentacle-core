@@ -135,7 +135,7 @@ function GlitchBackdrop({ thinking = false }: { thinking?: boolean }) {
       <div
         className={thinking ? "absolute inset-0 animate-tentacle" : "absolute inset-0"}
         style={{
-          backgroundImage: `url(${krakenSkull.url})`,
+          backgroundImage: `url(${octopus})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
