@@ -624,9 +624,14 @@
   0%, 100% { opacity: 0.32; transform: scale(1); }
   50% { opacity: 0.55; transform: scale(1.03); }
 }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
 .animate-flicker { animation: flicker 6s infinite; }
 .animate-drift { animation: drift 12s linear infinite; }
 .animate-pulseRing { animation: pulseRing 2.6s ease-out infinite; }
 .animate-tentacle { animation: tentacleFloat 5s ease-in-out infinite; }
 .animate-sweep { animation: sweep 6s linear infinite; }
 .animate-breathe { animation: breathe 7s ease-in-out infinite; }
+.animate-fadeIn { animation: fadeIn 0.35s ease-out both; }
