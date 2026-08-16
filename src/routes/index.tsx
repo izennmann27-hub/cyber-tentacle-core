@@ -338,8 +338,8 @@ function OctoTerminal() {
               <input
                 value={value}
                 onChange={(ev) => setValue(ev.target.value)}
-                placeholder={thinking ? "голова размышляет…" : "опишите задачу — голова выберет щупальца"}
-                aria-label="Запрос к голове"
+                placeholder={thinking ? "осьминог размышляет…" : "опишите задачу — осьминог выберет щупальца"}
+                aria-label="Запрос к осьминогу"
                 className="w-full bg-transparent font-mono text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none"
               />
               <input
