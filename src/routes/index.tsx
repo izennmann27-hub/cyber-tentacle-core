@@ -202,7 +202,17 @@ function OctoTerminal() {
 
       <div className="relative z-10 flex min-h-screen flex-col justify-between">
         <header className="flex items-start justify-between px-7 pt-6 font-mono text-[10px] uppercase tracking-[0.4em] text-muted-foreground">
-          <span className="text-primary/70">ВЕРСИЯ 26</span>
+          {tentaclesOpen ? (
+            <button
+              type="button"
+              onClick={() => setTentaclesOpen(false)}
+              className="border border-primary/30 px-2 py-0.5 text-[10px] uppercase tracking-[0.3em] text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+            >
+              ← назад
+            </button>
+          ) : (
+            <span className="text-primary/70">ВЕРСИЯ 26</span>
+          )}
           <span className="text-primary/70">{link}</span>
         </header>
 
