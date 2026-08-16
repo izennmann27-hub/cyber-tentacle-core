@@ -17,12 +17,26 @@ interface TSettings {
 
 const DEFAULT_SETTINGS: TSettings = { auto: true, confirm: false, priority: 2, limit: 60 };
 
-export function TentaclesMenu({ onClose }: { onClose: () => void }) {
+export function TentaclesMenu({
+  onClose,
+  state: stateProp,
+  onStateChange,
+}: {
+  onClose: () => void;
+  state?: Record<string, boolean>;
+  onStateChange?: (next: Record<string, boolean>) => void;
+}) {
   const [cat, setCat] = useState<TentacleCategory>("все");
   const [query, setQuery] = useState("");
-  const [state, setState] = useState<Record<string, boolean>>(() =>
+  const [localState, setLocalState] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(TENTACLES.map((t) => [t.id, t.installed])),
   );
+  const state = stateProp ?? localState;
+  const setState = (updater: (prev: Record<string, boolean>) => Record<string, boolean>) => {
+    const next = updater(state);
+    if (onStateChange) onStateChange(next);
+    else setLocalState(next);
+  };
   const [openId, setOpenId] = useState<string | null>(null);
   const [settingsId, setSettingsId] = useState<string | null>(null);
   const [settings, setSettings] = useState<Record<string, TSettings>>({});
