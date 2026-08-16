@@ -1,7 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { THEMES, type ThemeSlug } from "@/lib/themes";
-import { LOCAL_MODELS, CLOUD_MODELS, REMOTE_MODELS } from "@/lib/models";
+import {
+  LOCAL_MODELS,
+  CLOUD_MODELS,
+  REMOTE_MODELS,
+  type LocalModel,
+  type CloudModel,
+  type RemoteModel,
+} from "@/lib/models";
 import { useTheme } from "@/hooks/use-theme";
 import krakenSkull from "@/assets/kraken-skull.png.asset.json";
 import { TentaclesMenu } from "@/components/tentacles-menu";
