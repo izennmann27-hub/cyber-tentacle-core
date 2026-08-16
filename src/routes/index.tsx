@@ -1,10 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { THEMES, type ThemeSlug } from "@/lib/themes";
-import { LOCAL_MODELS, CLOUD_MODELS, REMOTE_MODELS } from "@/lib/models";
+import {
+  LOCAL_MODELS,
+  CLOUD_MODELS,
+  REMOTE_MODELS,
+  type LocalModel,
+  type CloudModel,
+  type RemoteModel,
+} from "@/lib/models";
 import { useTheme } from "@/hooks/use-theme";
 import krakenSkull from "@/assets/kraken-skull.png.asset.json";
 import { TentaclesMenu } from "@/components/tentacles-menu";
+import { TENTACLES } from "@/lib/tentacles";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -134,7 +142,18 @@ function OctoTerminal() {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [tentaclesOpen, setTentaclesOpen] = useState(false);
+  const [tentacleState, setTentacleState] = useState<Record<string, boolean>>(() =>
+    Object.fromEntries(TENTACLES.map((t) => [t.id, t.installed])),
+  );
+  const [local, setLocal] = useState(() => LOCAL_MODELS.map((m) => ({ ...m })));
+  const [cloud, setCloud] = useState(() => CLOUD_MODELS.map((m) => ({ ...m })));
+  const [remote, setRemote] = useState(() => REMOTE_MODELS.map((m) => ({ ...m })));
   const { theme, setTheme } = useTheme();
+
+  const connected = Object.values(tentacleState).filter(Boolean).length;
+  const cloudOn = cloud.some((m) => m.enabled);
+  const remoteOn = remote.some((m) => m.online);
+  const link = cloudOn ? "выход в сеть" : remoteOn ? "подключение к серверу" : "режим: автономный";
 
   useEffect(() => {
     if (!settingsOpen && !tentaclesOpen) return;
@@ -276,22 +295,20 @@ function OctoTerminal() {
             </form>
 
             <div className="mt-3 flex flex-wrap justify-center gap-x-6 gap-y-1 font-mono text-[10px] uppercase tracking-[0.28em] text-muted-foreground/80">
-              <button
-                type="button"
-                onClick={() => setTentaclesOpen(true)}
-                className="uppercase tracking-[0.28em] transition-colors hover:text-primary"
-              >
-                щупальца: 6 подключено
-              </button>
-              <span>режим: автономный</span>
-              <span>100% локально</span>
+              <span>{cloudOn || remoteOn ? "гибридный контур" : "100% локально"}</span>
             </div>
           </div>
         </section>
 
         <footer className="flex items-end justify-between px-7 pb-6 font-mono text-[10px] uppercase tracking-[0.4em] text-muted-foreground">
-          <span>низкоинтеллектуальные разработки</span>
-          <span className="text-primary/70">online</span>
+          <button
+            type="button"
+            onClick={() => setTentaclesOpen(true)}
+            className="uppercase tracking-[0.4em] transition-colors hover:text-primary"
+          >
+            щупальца: {connected} подключено
+          </button>
+          <span className="text-primary/70">{link}</span>
         </footer>
       </div>
 
@@ -299,11 +316,23 @@ function OctoTerminal() {
         <SettingsOverlay
           theme={theme}
           onPick={setTheme}
+          local={local}
+          setLocal={setLocal}
+          cloud={cloud}
+          setCloud={setCloud}
+          remote={remote}
+          setRemote={setRemote}
           onClose={() => setSettingsOpen(false)}
         />
       )}
 
-      {tentaclesOpen && <TentaclesMenu onClose={() => setTentaclesOpen(false)} />}
+      {tentaclesOpen && (
+        <TentaclesMenu
+          onClose={() => setTentaclesOpen(false)}
+          state={tentacleState}
+          onStateChange={setTentacleState}
+        />
+      )}
     </main>
   );
 }
@@ -316,15 +345,24 @@ function SettingsOverlay({
   theme,
   onPick,
   onClose,
+  local,
+  setLocal,
+  cloud,
+  setCloud,
+  remote,
+  setRemote,
 }: {
   theme: ThemeSlug;
   onPick: (slug: ThemeSlug) => void;
   onClose: () => void;
+  local: LocalModel[];
+  setLocal: React.Dispatch<React.SetStateAction<LocalModel[]>>;
+  cloud: CloudModel[];
+  setCloud: React.Dispatch<React.SetStateAction<CloudModel[]>>;
+  remote: RemoteModel[];
+  setRemote: React.Dispatch<React.SetStateAction<RemoteModel[]>>;
 }) {
   const [tab, setTab] = useState<SettingsTab>("вид");
-  const [local, setLocal] = useState(() => LOCAL_MODELS.map((m) => ({ ...m })));
-  const [cloud, setCloud] = useState(() => CLOUD_MODELS.map((m) => ({ ...m })));
-  const [remote, setRemote] = useState(() => REMOTE_MODELS.map((m) => ({ ...m })));
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
