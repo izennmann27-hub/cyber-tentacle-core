@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Paperclip } from "lucide-react";
 import { THEMES, type ThemeSlug } from "@/lib/themes";
 import {
   LOCAL_MODELS,
@@ -140,6 +141,8 @@ function OctoTerminal() {
   const [thinking, setThinking] = useState(false);
   const idRef = useRef(1);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [attachments, setAttachments] = useState<File[]>([]);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [tentaclesOpen, setTentaclesOpen] = useState(false);
   const [tentacleState, setTentacleState] = useState<Record<string, boolean>>(() =>
@@ -149,6 +152,11 @@ function OctoTerminal() {
   const [cloud, setCloud] = useState(() => CLOUD_MODELS.map((m) => ({ ...m })));
   const [remote, setRemote] = useState(() => REMOTE_MODELS.map((m) => ({ ...m })));
   const { theme, setTheme } = useTheme();
+
+  const attachFiles = (files: FileList | null) => {
+    if (!files) return;
+    setAttachments((prev) => [...prev, ...Array.from(files)]);
+  };
 
   const connected = Object.values(tentacleState).filter(Boolean).length;
   const cloudOn = cloud.some((m) => m.enabled);
@@ -276,6 +284,23 @@ function OctoTerminal() {
                 aria-label="Запрос к голове"
                 className="w-full bg-transparent font-mono text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none"
               />
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                className="sr-only"
+                onChange={(e) => attachFiles(e.target.files)}
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={thinking}
+                className="shrink-0 border border-primary/40 p-1.5 text-primary/80 transition-colors hover:bg-primary/10 hover:text-primary disabled:opacity-40"
+                aria-label="Прикрепить файлы"
+                title="Прикрепить файлы"
+              >
+                <Paperclip size={16} />
+              </button>
               <button
                 type="submit"
                 disabled={thinking}
@@ -284,6 +309,26 @@ function OctoTerminal() {
                 {thinking ? "думает" : "отправить"}
               </button>
             </form>
+            )}
+            {attachments.length > 0 && (
+              <div className="mt-2 flex flex-wrap items-center gap-2 font-mono text-[10px] text-primary/80">
+                {attachments.map((f, i) => (
+                  <span
+                    key={`${f.name}-${i}`}
+                    className="inline-flex items-center gap-1.5 border border-primary/30 bg-primary/5 px-2 py-0.5"
+                  >
+                    {f.name}
+                    <button
+                      type="button"
+                      onClick={() => setAttachments((prev) => prev.filter((_, idx) => idx !== i))}
+                      className="text-primary/60 hover:text-primary"
+                      aria-label={`Удалить ${f.name}`}
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
             )}
           </div>
         </section>
