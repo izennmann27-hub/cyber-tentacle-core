@@ -156,21 +156,25 @@ function GlitchBackdrop({ thinking = false }: { thinking?: boolean }) {
           WebkitMaskImage: "radial-gradient(ellipse at center, #000 35%, transparent 80%)",
         }}
       />
-      <div className="absolute inset-0 animate-streamUp">
-        {[0, 1].map((k) => (
-          <div key={k} className="px-6">
-            {lines.map((l, i) => (
-              <div
-                key={`${k}-${i}`}
-                className="truncate font-mono text-[11px] leading-[1.9] text-primary/20 animate-glitchShift"
-                style={{ animationDelay: `${(i % 7) * 0.4}s` }}
-              >
-                {l}
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
+      {thinking ? (
+        <ThoughtStream thinking={thinking} />
+      ) : (
+        <div className="absolute inset-0 animate-streamUp">
+          {[0, 1].map((k) => (
+            <div key={k} className="px-6">
+              {lines.map((l, i) => (
+                <div
+                  key={`${k}-${i}`}
+                  className="truncate font-mono text-[11px] leading-[1.9] text-primary/20 animate-glitchShift"
+                  style={{ animationDelay: `${(i % 7) * 0.4}s` }}
+                >
+                  {l}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
       <div className="absolute inset-0 scanlines" />
       <div
         className="absolute inset-0"
