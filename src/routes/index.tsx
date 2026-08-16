@@ -288,7 +288,26 @@ function OctoTerminal() {
           >
             щупальца: {connected} подключено
           </button>
-          <span className="text-primary/70">{link}</span>
+          <div className="flex items-center gap-5">
+            <button
+              type="button"
+              onClick={() => setTentaclesOpen(true)}
+              className="border border-primary/30 px-2 py-1 text-[10px] tracking-[0.3em] text-primary/80 transition-colors hover:border-primary/70 hover:bg-primary/10"
+            >
+              щупальца
+            </button>
+            <button
+              type="button"
+              onClick={() => setSettingsOpen(true)}
+              aria-label="Настройки"
+              className="grid h-8 w-8 place-items-center border border-primary/30 text-primary/80 transition-colors hover:border-primary/70 hover:bg-primary/10"
+            >
+              <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" stroke="currentColor" strokeWidth="1.6">
+                <circle cx="12" cy="12" r="3.2" />
+                <path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M18.5 5.5l-1.7 1.7M7.2 16.8l-1.7 1.7" />
+              </svg>
+            </button>
+          </div>
         </footer>
       </div>
 
