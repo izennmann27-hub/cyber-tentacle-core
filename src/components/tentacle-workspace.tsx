@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import type { TentacleDef } from "@/lib/tentacles";
+import krakenSkull from "@/assets/kraken-skull.png.asset.json";
 import {
   BACKENDS,
   endpointUrl,
@@ -109,7 +110,23 @@ export function TentacleWorkspace({
   );
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="relative flex h-full flex-col overflow-hidden bg-background">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage: `url(${krakenSkull.url})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          opacity: 0.18,
+          filter: "grayscale(1) brightness(0.85) contrast(1.05)",
+          maskImage: "radial-gradient(ellipse at 50% 45%, #000 25%, transparent 78%)",
+          WebkitMaskImage: "radial-gradient(ellipse at 50% 45%, #000 25%, transparent 78%)",
+        }}
+      />
+      <div aria-hidden className="pointer-events-none absolute inset-0 scanlines" />
+      <div className="relative z-10 flex h-full flex-col">
       <div className="flex items-center gap-3 border-b border-primary/20 px-5 py-3">
         <button
           type="button"
@@ -329,6 +346,7 @@ data: {"type":"done","status":"ok"}`}
           </Section>
         </div>
       )}
+      </div>
     </div>
   );
 }

@@ -65,7 +65,7 @@ export function TentaclesMenu({
         type="button"
         aria-label="Закрыть меню щупалец"
         onClick={onClose}
-        className="absolute inset-0 bg-background/80 backdrop-blur-sm"
+        className="absolute inset-0 bg-transparent"
       />
 
       {opened && (
