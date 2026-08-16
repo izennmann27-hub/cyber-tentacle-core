@@ -288,22 +288,20 @@ function OctoTerminal() {
             </form>
 
             <div className="mt-3 flex flex-wrap justify-center gap-x-6 gap-y-1 font-mono text-[10px] uppercase tracking-[0.28em] text-muted-foreground/80">
-              <button
-                type="button"
-                onClick={() => setTentaclesOpen(true)}
-                className="uppercase tracking-[0.28em] transition-colors hover:text-primary"
-              >
-                щупальца: 6 подключено
-              </button>
-              <span>режим: автономный</span>
-              <span>100% локально</span>
+              <span>{cloudOn || remoteOn ? "гибридный контур" : "100% локально"}</span>
             </div>
           </div>
         </section>
 
         <footer className="flex items-end justify-between px-7 pb-6 font-mono text-[10px] uppercase tracking-[0.4em] text-muted-foreground">
-          <span>низкоинтеллектуальные разработки</span>
-          <span className="text-primary/70">online</span>
+          <button
+            type="button"
+            onClick={() => setTentaclesOpen(true)}
+            className="uppercase tracking-[0.4em] transition-colors hover:text-primary"
+          >
+            щупальца: {connected} подключено
+          </button>
+          <span className="text-primary/70">{link}</span>
         </footer>
       </div>
 
@@ -311,11 +309,23 @@ function OctoTerminal() {
         <SettingsOverlay
           theme={theme}
           onPick={setTheme}
+          local={local}
+          setLocal={setLocal}
+          cloud={cloud}
+          setCloud={setCloud}
+          remote={remote}
+          setRemote={setRemote}
           onClose={() => setSettingsOpen(false)}
         />
       )}
 
-      {tentaclesOpen && <TentaclesMenu onClose={() => setTentaclesOpen(false)} />}
+      {tentaclesOpen && (
+        <TentaclesMenu
+          onClose={() => setTentaclesOpen(false)}
+          state={tentacleState}
+          onStateChange={setTentacleState}
+        />
+      )}
     </main>
   );
 }
