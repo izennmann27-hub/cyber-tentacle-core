@@ -134,7 +134,18 @@ function OctoTerminal() {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [tentaclesOpen, setTentaclesOpen] = useState(false);
+  const [tentacleState, setTentacleState] = useState<Record<string, boolean>>(() =>
+    Object.fromEntries(TENTACLES.map((t) => [t.id, t.installed])),
+  );
+  const [local, setLocal] = useState(() => LOCAL_MODELS.map((m) => ({ ...m })));
+  const [cloud, setCloud] = useState(() => CLOUD_MODELS.map((m) => ({ ...m })));
+  const [remote, setRemote] = useState(() => REMOTE_MODELS.map((m) => ({ ...m })));
   const { theme, setTheme } = useTheme();
+
+  const connected = Object.values(tentacleState).filter(Boolean).length;
+  const cloudOn = cloud.some((m) => m.enabled);
+  const remoteOn = remote.some((m) => m.online);
+  const link = cloudOn ? "выход в сеть" : remoteOn ? "подключение к серверу" : "режим: автономный";
 
   useEffect(() => {
     if (!settingsOpen && !tentaclesOpen) return;
