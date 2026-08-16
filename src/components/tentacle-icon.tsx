@@ -4,6 +4,8 @@
  * Цвет наследуется от темы через currentColor.
  */
 
+import type { ReactElement } from "react";
+
 type IconProps = {
   id: string;
   className?: string;
@@ -11,7 +13,7 @@ type IconProps = {
   strokeWidth?: number;
 };
 
-const P: Record<string, JSX.Element> = {
+const P: Record<string, ReactElement> = {
   "octo-chat": (
     <>
       <path d="M3 5h18v11H9l-6 5V5z" />
