@@ -8,10 +8,12 @@ export interface TentacleDef {
   model: string;
   role: string;
   size: string;
-  category: "чат" | "анализ" | "медиа" | "документы" | "код" | "данные";
+  category: "чат" | "анализ" | "медиа" | "документы" | "код" | "данные" | "система";
   installed: boolean;
   /** основной бэкенд щупальца */
-  backend: "router" | "tentacles";
+  backend: "router" | "tentacles" | "proxy";
+  /** цепочка деградации: primary упал → идём по списку */
+  fallback?: string[];
   /** инструменты, которые щупальце публикует голове */
   tools: string[];
   /** точки коннекта: UI уже знает куда стучаться */
@@ -33,6 +35,7 @@ export const TENTACLE_CATEGORIES = [
   "документы",
   "код",
   "данные",
+  "система",
 ] as const;
 export type TentacleCategory = (typeof TENTACLE_CATEGORIES)[number];
 
