@@ -74,6 +74,60 @@ function glitchLines(count: number, seed: number) {
   return lines;
 }
 
+const THOUGHTS = [
+  "инициализация нейронного субстрата…",
+  "декомпозиция запроса на примитивы…",
+  "оценка релевантности щупалец…",
+  "выбор инструментов: extraction, analyze, coder…",
+  "построение конвейера выполнения…",
+  "синхронизация с локальной памятью…",
+  "проверка доступности endpoint'ов…",
+  "генерация промптов для подчинённых моделей…",
+  "запуск параллельных задач…",
+  "агрегация промежуточных результатов…",
+  "формирование итогового ответа…",
+];
+
+function ThoughtStream({ thinking }: { thinking: boolean }) {
+  const [visible, setVisible] = useState(0);
+  useEffect(() => {
+    if (!thinking) {
+      setVisible(0);
+      return;
+    }
+    setVisible(1);
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    for (let i = 1; i < THOUGHTS.length; i++) {
+      timers.push(setTimeout(() => setVisible((v) => Math.max(v, i + 1)), i * 220));
+    }
+    return () => timers.forEach(clearTimeout);
+  }, [thinking]);
+
+  return (
+    <div className="absolute inset-0 flex flex-col items-center justify-center px-6">
+      <div className="w-full max-w-2xl space-y-2 font-mono text-[12px] leading-relaxed text-primary/40">
+        {THOUGHTS.slice(0, visible).map((t, i) => (
+          <div
+            key={t}
+            className="animate-fadeIn flex items-center gap-3"
+            style={{ animationDelay: `${i * 80}ms`, animationFillMode: "both" }}
+          >
+            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary/60" />
+            <span>{t}</span>
+          </div>
+        ))}
+        {thinking && (
+          <div className="mt-2 flex items-center gap-2 text-primary/30">
+            <span className="h-1 w-1 animate-pulse rounded-full bg-primary" />
+            <span className="h-1 w-1 animate-pulse rounded-full bg-primary" style={{ animationDelay: "0.2s" }} />
+            <span className="h-1 w-1 animate-pulse rounded-full bg-primary" style={{ animationDelay: "0.4s" }} />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function GlitchBackdrop({ thinking = false }: { thinking?: boolean }) {
   const lines = useMemo(() => glitchLines(70, 20260814), []);
   return (
