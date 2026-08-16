@@ -9,9 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TempRouteImport } from './routes/temp'
 import { Route as LauncherRouteImport } from './routes/launcher'
 import { Route as IndexRouteImport } from './routes/index'
 
+const TempRoute = TempRouteImport.update({
+  id: '/temp',
+  path: '/temp',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LauncherRoute = LauncherRouteImport.update({
   id: '/launcher',
   path: '/launcher',
@@ -26,31 +32,42 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/launcher': typeof LauncherRoute
+  '/temp': typeof TempRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/launcher': typeof LauncherRoute
+  '/temp': typeof TempRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/launcher': typeof LauncherRoute
+  '/temp': typeof TempRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/launcher'
+  fullPaths: '/' | '/launcher' | '/temp'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/launcher'
-  id: '__root__' | '/' | '/launcher'
+  to: '/' | '/launcher' | '/temp'
+  id: '__root__' | '/' | '/launcher' | '/temp'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LauncherRoute: typeof LauncherRoute
+  TempRoute: typeof TempRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/temp': {
+      id: '/temp'
+      path: '/temp'
+      fullPath: '/temp'
+      preLoaderRoute: typeof TempRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/launcher': {
       id: '/launcher'
       path: '/launcher'
@@ -71,6 +88,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LauncherRoute: LauncherRoute,
+  TempRoute: TempRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
