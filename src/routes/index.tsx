@@ -104,7 +104,7 @@ function ThoughtStream({ thinking }: { thinking: boolean }) {
   }, [thinking]);
 
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center px-6">
+    <div className="absolute inset-0 flex flex-col items-start justify-center px-6">
       <div className="w-full max-w-2xl space-y-2 font-mono text-[12px] leading-relaxed text-primary/40">
         {THOUGHTS.slice(0, visible).map((t, i) => (
           <div
