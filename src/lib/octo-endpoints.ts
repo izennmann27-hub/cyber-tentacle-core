@@ -12,6 +12,13 @@ export interface BackendDef {
 }
 
 export const BACKENDS: Record<string, BackendDef> = {
+  proxy: {
+    id: "proxy",
+    label: "Tentacles Proxy",
+    host: "127.0.0.1",
+    port: 5180,
+    role: "единый разъём · routing · fallback · quota",
+  },
   router: {
     id: "router",
     label: "AgentWorld Router",
