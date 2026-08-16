@@ -296,7 +296,7 @@ function OctoTerminal() {
                     }
                   >
                     <span className="mr-2 uppercase tracking-[0.3em] text-muted-foreground">
-                      {e.role === "operator" ? "> вы" : "[голова]"}
+                      {e.role === "operator" ? "> вы" : "[осьминог]"}
                     </span>
                     {e.text}
                   </div>
