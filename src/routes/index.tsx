@@ -141,6 +141,8 @@ function OctoTerminal() {
   const [thinking, setThinking] = useState(false);
   const idRef = useRef(1);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [attachments, setAttachments] = useState<File[]>([]);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [tentaclesOpen, setTentaclesOpen] = useState(false);
   const [tentacleState, setTentacleState] = useState<Record<string, boolean>>(() =>
@@ -150,6 +152,11 @@ function OctoTerminal() {
   const [cloud, setCloud] = useState(() => CLOUD_MODELS.map((m) => ({ ...m })));
   const [remote, setRemote] = useState(() => REMOTE_MODELS.map((m) => ({ ...m })));
   const { theme, setTheme } = useTheme();
+
+  const attachFiles = (files: FileList | null) => {
+    if (!files) return;
+    setAttachments((prev) => [...prev, ...Array.from(files)]);
+  };
 
   const connected = Object.values(tentacleState).filter(Boolean).length;
   const cloudOn = cloud.some((m) => m.enabled);
