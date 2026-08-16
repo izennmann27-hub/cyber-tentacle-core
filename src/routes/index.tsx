@@ -11,7 +11,7 @@ import {
   type RemoteModel,
 } from "@/lib/models";
 import { useTheme } from "@/hooks/use-theme";
-import krakenSkull from "@/assets/kraken-skull.png.asset.json";
+import octopus from "@/assets/octopus.jpg";
 import { TentaclesMenu } from "@/components/tentacles-menu";
 import { TENTACLES } from "@/lib/tentacles";
 
