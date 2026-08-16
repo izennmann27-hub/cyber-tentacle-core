@@ -285,10 +285,6 @@ function OctoTerminal() {
               </button>
             </form>
             )}
-
-            <div className="mt-3 flex flex-wrap justify-center gap-x-6 gap-y-1 font-mono text-[10px] uppercase tracking-[0.28em] text-muted-foreground/80">
-              <span>{cloudOn || remoteOn ? "гибридный контур" : "100% локально"}</span>
-            </div>
           </div>
         </section>
 
