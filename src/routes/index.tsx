@@ -65,18 +65,19 @@ function glitchLines(count: number, seed: number) {
   return lines;
 }
 
-function GlitchBackdrop() {
+function GlitchBackdrop({ thinking = false }: { thinking?: boolean }) {
   const lines = useMemo(() => glitchLines(70, 20260814), []);
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
       <div
-        className="absolute inset-0"
+        className={thinking ? "absolute inset-0 animate-tentacle" : "absolute inset-0"}
         style={{
           backgroundImage: `url(${krakenSkull.url})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-          opacity: 0.22,
+          opacity: thinking ? 0.34 : 0.22,
+          transition: "opacity 600ms ease",
           filter: "grayscale(1) brightness(0.85) contrast(1.05)",
           maskImage: "radial-gradient(ellipse at 50% 55%, #000 30%, transparent 78%)",
           WebkitMaskImage: "radial-gradient(ellipse at 50% 55%, #000 30%, transparent 78%)",
