@@ -74,6 +74,7 @@ export const endpointUrl = (e: EndpointDef) => `${baseUrl(e.backend)}${e.path}`;
 
 /** Контракт SSE-кадра для длинных операций. */
 export type StreamFrame =
+  | { type: "start"; task_id?: string }
   | { type: "progress"; step: number; total: number }
   | { type: "tokens"; total: number }
   | { type: "result"; data: unknown }
