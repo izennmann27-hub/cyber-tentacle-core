@@ -247,6 +247,7 @@ function OctoTerminal() {
               </div>
             )}
 
+            {!tentaclesOpen && (
             <form
               onSubmit={submit}
               className="group flex items-center gap-3 border border-primary/30 bg-background/40 px-4 py-3 backdrop-blur-sm transition-colors focus-within:border-primary/70"
@@ -273,6 +274,7 @@ function OctoTerminal() {
                 {thinking ? "думает" : "отправить"}
               </button>
             </form>
+            )}
 
             <div className="mt-3 flex flex-wrap justify-center gap-x-6 gap-y-1 font-mono text-[10px] uppercase tracking-[0.28em] text-muted-foreground/80">
               <span>{cloudOn || remoteOn ? "гибридный контур" : "100% локально"}</span>
