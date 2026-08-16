@@ -15,6 +15,7 @@ const ACTIONS: Record<TentacleDef["category"], string[]> = {
   документы: ["создать", "экспорт PDF", "тема", "live preview"],
   код: ["file tree", "surgical edit", "diff", "git status"],
   данные: ["search", "recent", "sessions", "экспорт"],
+  система: ["health check", "logs", "restart", "обновить список"],
 };
 
 interface Line {

@@ -12,6 +12,13 @@ export interface BackendDef {
 }
 
 export const BACKENDS: Record<string, BackendDef> = {
+  proxy: {
+    id: "proxy",
+    label: "Tentacles Proxy",
+    host: "127.0.0.1",
+    port: 5180,
+    role: "единый разъём · routing · fallback · quota",
+  },
   router: {
     id: "router",
     label: "AgentWorld Router",
@@ -67,6 +74,7 @@ export const endpointUrl = (e: EndpointDef) => `${baseUrl(e.backend)}${e.path}`;
 
 /** Контракт SSE-кадра для длинных операций. */
 export type StreamFrame =
+  | { type: "start"; task_id?: string }
   | { type: "progress"; step: number; total: number }
   | { type: "tokens"; total: number }
   | { type: "result"; data: unknown }
@@ -164,4 +172,49 @@ export async function pingBackend(b: keyof typeof BACKENDS): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+/* ───────────── единый коннект-разъём (proxy layer contract) ───────────── */
+
+export interface ProxyResponse<T = unknown> {
+  ok: boolean;
+  tentacle: string;
+  tool: string;
+  result?: T;
+  tokens?: { prompt: number; completion: number; total: number };
+  model_used?: string;
+  duration_ms?: number;
+  request_id?: string;
+  error?: { code: string; message: string; retry_after?: number; fallback_available?: boolean };
+}
+
+const proxyEndpoint = (stream: boolean): EndpointDef => ({
+  method: "POST",
+  path: stream ? "/stream" : "/call",
+  backend: "proxy",
+  note: "единый разъём щупалец",
+  stream,
+});
+
+/**
+ * call(tentacle, tool, input) — весь UI ходит только сюда.
+ * Прокси сам решает backend, retry и fallback-цепочку.
+ */
+export async function callTentacle<T = unknown>(
+  tentacle: string,
+  tool: string,
+  input: Record<string, unknown> = {},
+): Promise<ProxyResponse<T>> {
+  return callEndpoint<ProxyResponse<T>>(proxyEndpoint(false), { tentacle, tool, input });
+}
+
+/** stream(tentacle, tool, input) — SSE-кадры контракта start/progress/tokens/result/error/done. */
+export async function streamTentacle(
+  tentacle: string,
+  tool: string,
+  input: Record<string, unknown>,
+  onFrame: (f: StreamFrame) => void,
+  signal?: AbortSignal,
+): Promise<void> {
+  return streamEndpoint(proxyEndpoint(true), { tentacle, tool, input }, onFrame, signal);
 }
