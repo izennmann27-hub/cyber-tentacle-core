@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { TentacleIcon } from "@/components/tentacle-icon";
 
 export interface Tentacle {
   id: string;
@@ -25,8 +26,8 @@ export function TentacleCard({ t }: { t: Tentacle }) {
 
       <div className="relative flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-primary/50 bg-background/60 font-display text-lg neon-text">
-            {t.glyph}
+          <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-primary/50 bg-background/60 text-primary neon-text">
+            <TentacleIcon id={t.id} className="h-5 w-5" />
           </div>
           <div>
             <div className="font-display text-sm font-bold uppercase tracking-widest">{t.name}</div>

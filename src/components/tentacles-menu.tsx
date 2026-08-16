@@ -6,6 +6,7 @@ import {
   type TentacleDef,
 } from "@/lib/tentacles";
 import { TentacleWorkspace } from "@/components/tentacle-workspace";
+import { TentacleIcon } from "@/components/tentacle-icon";
 import { BACKENDS } from "@/lib/octo-endpoints";
 
 interface TSettings {
@@ -195,7 +196,7 @@ function Row({
           on ? "border-primary/60 text-primary" : "border-border/60 text-muted-foreground"
         }`}
       >
-        {t.glyph}
+        <TentacleIcon id={t.id} className="h-5 w-5" />
       </div>
 
       <div className="min-w-0 flex-1">
