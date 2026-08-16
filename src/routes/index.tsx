@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Paperclip } from "lucide-react";
 import { THEMES, type ThemeSlug } from "@/lib/themes";
 import {
   LOCAL_MODELS,
