@@ -284,6 +284,23 @@ function OctoTerminal() {
                 aria-label="Запрос к голове"
                 className="w-full bg-transparent font-mono text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none"
               />
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                className="sr-only"
+                onChange={(e) => attachFiles(e.target.files)}
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={thinking}
+                className="shrink-0 border border-primary/40 p-1.5 text-primary/80 transition-colors hover:bg-primary/10 hover:text-primary disabled:opacity-40"
+                aria-label="Прикрепить файлы"
+                title="Прикрепить файлы"
+              >
+                <Paperclip size={16} />
+              </button>
               <button
                 type="submit"
                 disabled={thinking}
@@ -292,6 +309,26 @@ function OctoTerminal() {
                 {thinking ? "думает" : "отправить"}
               </button>
             </form>
+            )}
+            {attachments.length > 0 && (
+              <div className="mt-2 flex flex-wrap items-center gap-2 font-mono text-[10px] text-primary/80">
+                {attachments.map((f, i) => (
+                  <span
+                    key={`${f.name}-${i}`}
+                    className="inline-flex items-center gap-1.5 border border-primary/30 bg-primary/5 px-2 py-0.5"
+                  >
+                    {f.name}
+                    <button
+                      type="button"
+                      onClick={() => setAttachments((prev) => prev.filter((_, idx) => idx !== i))}
+                      className="text-primary/60 hover:text-primary"
+                      aria-label={`Удалить ${f.name}`}
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
             )}
           </div>
         </section>
