@@ -11,7 +11,7 @@ import {
   type RemoteModel,
 } from "@/lib/models";
 import { useTheme } from "@/hooks/use-theme";
-import krakenSkull from "@/assets/kraken-skull.png.asset.json";
+import octopus from "@/assets/octopus.jpg";
 import { TentaclesMenu } from "@/components/tentacles-menu";
 import { TENTACLES } from "@/lib/tentacles";
 
@@ -104,7 +104,7 @@ function ThoughtStream({ thinking }: { thinking: boolean }) {
   }, [thinking]);
 
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center px-6">
+    <div className="absolute inset-0 flex flex-col items-start justify-center px-6">
       <div className="w-full max-w-2xl space-y-2 font-mono text-[12px] leading-relaxed text-primary/40">
         {THOUGHTS.slice(0, visible).map((t, i) => (
           <div
@@ -135,7 +135,7 @@ function GlitchBackdrop({ thinking = false }: { thinking?: boolean }) {
       <div
         className={thinking ? "absolute inset-0 animate-tentacle" : "absolute inset-0"}
         style={{
-          backgroundImage: `url(${krakenSkull.url})`,
+          backgroundImage: `url(${octopus})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -256,7 +256,7 @@ function OctoTerminal() {
         {
           id: id + 1000,
           role: "head",
-          text: "голова разобрала запрос · щупальца подобраны · ожидание локального ответа",
+          text: "осьминог разобрал запрос · щупальца подобраны · ожидание локального ответа",
         },
       ]);
     }, 2600);
@@ -296,7 +296,7 @@ function OctoTerminal() {
                     }
                   >
                     <span className="mr-2 uppercase tracking-[0.3em] text-muted-foreground">
-                      {e.role === "operator" ? "> вы" : "[голова]"}
+                      {e.role === "operator" ? "> вы" : "[осьминог]"}
                     </span>
                     {e.text}
                   </div>
@@ -310,7 +310,7 @@ function OctoTerminal() {
                   <span className="absolute h-4 w-4 animate-pulseRing rounded-full bg-primary/40" />
                   <span className="h-4 w-4 animate-spin rounded-full border border-primary/30 border-t-primary" />
                 </span>
-                <span className="animate-flicker">голова размышляет</span>
+                <span className="animate-flicker">осьминог размышляет</span>
                 <span className="flex gap-1">
                   {[0, 1, 2].map((d) => (
                     <span
@@ -338,8 +338,8 @@ function OctoTerminal() {
               <input
                 value={value}
                 onChange={(ev) => setValue(ev.target.value)}
-                placeholder={thinking ? "голова размышляет…" : "опишите задачу — голова выберет щупальца"}
-                aria-label="Запрос к голове"
+                placeholder={thinking ? "осьминог размышляет…" : "опишите задачу — осьминог выберет щупальца"}
+                aria-label="Запрос к осьминогу"
                 className="w-full bg-transparent font-mono text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none"
               />
               <input
