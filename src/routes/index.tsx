@@ -338,15 +338,24 @@ function SettingsOverlay({
   theme,
   onPick,
   onClose,
+  local,
+  setLocal,
+  cloud,
+  setCloud,
+  remote,
+  setRemote,
 }: {
   theme: ThemeSlug;
   onPick: (slug: ThemeSlug) => void;
   onClose: () => void;
+  local: LocalModel[];
+  setLocal: React.Dispatch<React.SetStateAction<LocalModel[]>>;
+  cloud: CloudModel[];
+  setCloud: React.Dispatch<React.SetStateAction<CloudModel[]>>;
+  remote: RemoteModel[];
+  setRemote: React.Dispatch<React.SetStateAction<RemoteModel[]>>;
 }) {
   const [tab, setTab] = useState<SettingsTab>("вид");
-  const [local, setLocal] = useState(() => LOCAL_MODELS.map((m) => ({ ...m })));
-  const [cloud, setCloud] = useState(() => CLOUD_MODELS.map((m) => ({ ...m })));
-  const [remote, setRemote] = useState(() => REMOTE_MODELS.map((m) => ({ ...m })));
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
