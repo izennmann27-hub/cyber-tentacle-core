@@ -65,18 +65,19 @@ function glitchLines(count: number, seed: number) {
   return lines;
 }
 
-function GlitchBackdrop() {
+function GlitchBackdrop({ thinking = false }: { thinking?: boolean }) {
   const lines = useMemo(() => glitchLines(70, 20260814), []);
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
       <div
-        className="absolute inset-0"
+        className={thinking ? "absolute inset-0 animate-tentacle" : "absolute inset-0"}
         style={{
           backgroundImage: `url(${krakenSkull.url})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-          opacity: 0.22,
+          opacity: thinking ? 0.34 : 0.22,
+          transition: "opacity 600ms ease",
           filter: "grayscale(1) brightness(0.85) contrast(1.05)",
           maskImage: "radial-gradient(ellipse at 50% 55%, #000 30%, transparent 78%)",
           WebkitMaskImage: "radial-gradient(ellipse at 50% 55%, #000 30%, transparent 78%)",
@@ -128,7 +129,9 @@ interface Entry {
 function OctoTerminal() {
   const [value, setValue] = useState("");
   const [log, setLog] = useState<Entry[]>([]);
+  const [thinking, setThinking] = useState(false);
   const idRef = useRef(1);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [tentaclesOpen, setTentaclesOpen] = useState(false);
   const { theme, setTheme } = useTheme();
@@ -145,26 +148,38 @@ function OctoTerminal() {
     return () => window.removeEventListener("keydown", onKey);
   }, [settingsOpen, tentaclesOpen]);
 
+  useEffect(() => () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+  }, []);
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     const q = value.trim();
-    if (!q) return;
+    if (!q || thinking) return;
     const id = idRef.current++;
     setLog((prev) => [
       ...prev.slice(-4),
       { id, role: "operator", text: q },
-      {
-        id: id + 1000,
-        role: "head",
-        text: "голова разбирает запрос · подбираю щупальца · ожидание локального ответа",
-      },
     ]);
     setValue("");
+    setThinking(true);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
+      setThinking(false);
+      setLog((prev) => [
+        ...prev.slice(-4),
+        {
+          id: id + 1000,
+          role: "head",
+          text: "голова разобрала запрос · щупальца подобраны · ожидание локального ответа",
+        },
+      ]);
+    }, 2600);
   };
 
   return (
     <main className="relative min-h-screen w-full overflow-hidden bg-background">
-      <GlitchBackdrop />
+      <GlitchBackdrop thinking={thinking} />
 
       <div className="relative z-10 flex min-h-screen flex-col justify-between">
         <header className="flex items-start justify-between px-7 pt-6 font-mono text-[10px] uppercase tracking-[0.4em] text-muted-foreground">
@@ -214,25 +229,49 @@ function OctoTerminal() {
               </div>
             )}
 
+            {thinking && (
+              <div className="mb-4 flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.28em] text-primary/80">
+                <span className="relative grid h-4 w-4 place-items-center">
+                  <span className="absolute h-4 w-4 animate-pulseRing rounded-full bg-primary/40" />
+                  <span className="h-4 w-4 animate-spin rounded-full border border-primary/30 border-t-primary" />
+                </span>
+                <span className="animate-flicker">голова размышляет</span>
+                <span className="flex gap-1">
+                  {[0, 1, 2].map((d) => (
+                    <span
+                      key={d}
+                      className="h-1 w-1 animate-pulseRing rounded-full bg-primary"
+                      style={{ animationDelay: `${d * 0.28}s` }}
+                    />
+                  ))}
+                </span>
+              </div>
+            )}
+
             <form
               onSubmit={submit}
               className="group flex items-center gap-3 border border-primary/30 bg-background/40 px-4 py-3 backdrop-blur-sm transition-colors focus-within:border-primary/70"
             >
-              <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-primary/60">
-                ▌
-              </span>
+              {thinking ? (
+                <span className="h-3.5 w-3.5 shrink-0 animate-spin rounded-full border border-primary/30 border-t-primary" />
+              ) : (
+                <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-primary/60">
+                  ▌
+                </span>
+              )}
               <input
                 value={value}
                 onChange={(ev) => setValue(ev.target.value)}
-                placeholder="опишите задачу — голова выберет щупальца"
+                placeholder={thinking ? "голова размышляет…" : "опишите задачу — голова выберет щупальца"}
                 aria-label="Запрос к голове"
                 className="w-full bg-transparent font-mono text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none"
               />
               <button
                 type="submit"
-                className="shrink-0 border border-primary/40 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.3em] text-primary transition-colors hover:bg-primary/10"
+                disabled={thinking}
+                className="shrink-0 border border-primary/40 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.3em] text-primary transition-colors hover:bg-primary/10 disabled:opacity-40"
               >
-                отправить
+                {thinking ? "думает" : "отправить"}
               </button>
             </form>
 
