@@ -202,9 +202,8 @@ function OctoTerminal() {
 
       <div className="relative z-10 flex min-h-screen flex-col justify-between">
         <header className="flex items-start justify-between px-7 pt-6 font-mono text-[10px] uppercase tracking-[0.4em] text-muted-foreground">
-          <span className="text-primary/70">ОСЬМИНОГ - 0</span>
+          <span className="text-primary/70">ВЕРСИЯ 26</span>
           <div className="flex items-center gap-5">
-            <span>ВЕРСИЯ 26</span>
             <button
               type="button"
               onClick={() => setTentaclesOpen(true)}
