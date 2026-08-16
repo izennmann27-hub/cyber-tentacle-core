@@ -11,7 +11,7 @@ import {
   type RemoteModel,
 } from "@/lib/models";
 import { useTheme } from "@/hooks/use-theme";
-import octopus from "@/assets/octopus.jpg";
+import krakenSkull from "@/assets/kraken-skull.png.asset.json";
 import { TentaclesMenu } from "@/components/tentacles-menu";
 import { TENTACLES } from "@/lib/tentacles";
 
@@ -135,7 +135,7 @@ function GlitchBackdrop({ thinking = false }: { thinking?: boolean }) {
       <div
         className={thinking ? "absolute inset-0 animate-tentacle" : "absolute inset-0"}
         style={{
-          backgroundImage: `url(${octopus})`,
+          backgroundImage: `url(${krakenSkull.url})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
