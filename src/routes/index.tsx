@@ -310,7 +310,7 @@ function OctoTerminal() {
                   <span className="absolute h-4 w-4 animate-pulseRing rounded-full bg-primary/40" />
                   <span className="h-4 w-4 animate-spin rounded-full border border-primary/30 border-t-primary" />
                 </span>
-                <span className="animate-flicker">голова размышляет</span>
+                <span className="animate-flicker">осьминог размышляет</span>
                 <span className="flex gap-1">
                   {[0, 1, 2].map((d) => (
                     <span
