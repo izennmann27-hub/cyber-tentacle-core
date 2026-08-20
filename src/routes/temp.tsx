@@ -18,6 +18,8 @@ import {
 } from "@/lib/temp-data";
 import krakenSkull from "@/assets/kraken-skull.png.asset.json";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/hooks/use-theme";
+import { THEMES, type ThemeSlug } from "@/lib/themes";
 
 export const Route = createFileRoute("/temp")({
   head: () => ({
@@ -45,6 +47,7 @@ type Tab = (typeof TABS)[number];
 
 function TempModule() {
   const { state, setState, reset } = useTempStore();
+  const { theme, setTheme } = useTheme();
   const [tab, setTab] = useState<Tab>("задачи");
   const [openTask, setOpenTask] = useState<Task | null>(null);
   const [openDeal, setOpenDeal] = useState<Deal | null>(null);
