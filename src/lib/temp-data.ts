@@ -273,6 +273,44 @@ export function heatmapCells(tasks: Task[], personId: string, weeks = 26) {
   return cells;
 }
 
+/** Cells for a single calendar month, grouped into week columns (Sun..Sat). */
+export function heatmapMonthCells(tasks: Task[], personId: string, year: number, month: number) {
+  const map = new Map<string, { active: number; done: number }>();
+  for (const t of tasks) {
+    if (t.assigneeId !== personId) continue;
+    const a = map.get(t.startDate) ?? { active: 0, done: 0 };
+    a.active += 1;
+    map.set(t.startDate, a);
+    if (t.completedAt) {
+      const d = map.get(t.completedAt) ?? { active: 0, done: 0 };
+      d.done += 1;
+      map.set(t.completedAt, d);
+    }
+  }
+  const first = new Date(year, month, 1);
+  const last = new Date(year, month + 1, 0);
+  const cols: ({ date: string; active: number; done: number; future: boolean } | null)[][] = [];
+  let col: ({ date: string; active: number; done: number; future: boolean } | null)[] = Array.from(
+    { length: first.getDay() },
+    () => null,
+  );
+  for (let day = 1; day <= last.getDate(); day++) {
+    const d = new Date(year, month, day);
+    const key = iso(d);
+    const v = map.get(key) ?? { active: 0, done: 0 };
+    col.push({ date: key, active: v.active, done: v.done, future: key > today() });
+    if (col.length === 7) {
+      cols.push(col);
+      col = [];
+    }
+  }
+  if (col.length) {
+    while (col.length < 7) col.push(null);
+    cols.push(col);
+  }
+  return cols;
+}
+
 export function personStats(tasks: Task[], personId: string) {
   const mine = tasks.filter((t) => t.assigneeId === personId);
   return {
