@@ -18,6 +18,8 @@ import {
 } from "@/lib/temp-data";
 import krakenSkull from "@/assets/kraken-skull.png.asset.json";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/hooks/use-theme";
+import { THEMES, type ThemeSlug } from "@/lib/themes";
 
 export const Route = createFileRoute("/temp")({
   head: () => ({
@@ -45,6 +47,7 @@ type Tab = (typeof TABS)[number];
 
 function TempModule() {
   const { state, setState, reset } = useTempStore();
+  const { theme, setTheme } = useTheme();
   const [tab, setTab] = useState<Tab>("задачи");
   const [openTask, setOpenTask] = useState<Task | null>(null);
   const [openDeal, setOpenDeal] = useState<Deal | null>(null);
@@ -92,9 +95,24 @@ function TempModule() {
             </span>
           </h1>
         </div>
-        <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-          {state.teamName} · {state.persons.length} чел · {state.tasks.length} задач
+        <div className="flex items-center gap-3">
+          <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+            {state.teamName} · {state.persons.length} чел · {state.tasks.length} задач
+          </div>
+          <select
+            aria-label="Тема"
+            value={theme}
+            onChange={(e) => setTheme(e.target.value as ThemeSlug)}
+            className="border border-border/60 bg-card/45 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.2em] outline-none backdrop-blur-md"
+          >
+            {THEMES.map((t) => (
+              <option key={t.slug} value={t.slug}>
+                {t.name}
+              </option>
+            ))}
+          </select>
         </div>
+
       </header>
 
       <nav className="relative z-10 flex gap-1 overflow-x-auto border-b border-border/40 px-4 md:px-8">
@@ -259,7 +277,7 @@ function TasksBoard({
         <select
           value={assignee}
           onChange={(e) => setAssignee(e.target.value)}
-          className="border border-border/60 bg-background/60 px-2 py-1 font-mono text-[11px]"
+          className="border border-border/60 bg-card/45 backdrop-blur-md px-2 py-1 font-mono text-[11px]"
         >
           {state.persons.map((p) => (
             <option key={p.id} value={p.id}>
@@ -296,7 +314,7 @@ function TasksBoard({
                     draggable
                     onDragStart={(e) => e.dataTransfer.setData("text/task", t.id)}
                     onClick={() => onOpen(t)}
-                    className="cursor-pointer border border-border/60 bg-background/50 p-2 transition hover:border-primary/60"
+                    className="cursor-pointer border border-border/60 bg-card/45 backdrop-blur-md p-2 transition hover:border-primary/60"
                   >
                     <div className="font-mono text-xs leading-snug">{t.title}</div>
                     <div className="mt-2 flex flex-wrap items-center gap-2 font-mono text-[9px] uppercase tracking-[0.18em] text-muted-foreground">
@@ -410,7 +428,7 @@ function CrmBoard({
                     draggable
                     onDragStart={(e) => e.dataTransfer.setData("text/deal", d.id)}
                     onClick={() => onOpen(d)}
-                    className="cursor-pointer border border-border/60 bg-background/50 p-2 transition hover:border-primary/60"
+                    className="cursor-pointer border border-border/60 bg-card/45 backdrop-blur-md p-2 transition hover:border-primary/60"
                   >
                     <div className="font-mono text-xs leading-snug">{d.title}</div>
                     <div className="mt-2 font-mono text-[9px] uppercase tracking-[0.18em] text-muted-foreground">
@@ -430,7 +448,7 @@ function CrmBoard({
         </div>
         <div className="grid gap-2 md:grid-cols-3">
           {state.clients.map((c) => (
-            <div key={c.id} className="border border-border/60 bg-background/40 p-3">
+            <div key={c.id} className="border border-border/60 bg-card/45 backdrop-blur-md p-3">
               <div className="font-display text-sm font-bold">{c.name}</div>
               <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
                 {c.industry ?? "—"} · {c.contact ?? "без контакта"}
@@ -473,7 +491,7 @@ function OrgBoard({ state }: { state: ReturnType<typeof useTempStore>["state"] }
               <div key={role.id} style={{ marginLeft: depth * 16 }} className="space-y-2">
                 <div
                   className={cn(
-                    "border bg-background/40 p-2",
+                    "border bg-card/45 backdrop-blur-md p-2",
                     role.status === "vacancy"
                       ? "border-dashed border-destructive/60"
                       : "border-border/60",
@@ -544,11 +562,11 @@ function TeamSettings({
         <input
           value={state.teamName}
           onChange={(e) => onRename(e.target.value)}
-          className="w-full border border-border/60 bg-background/50 px-3 py-2 font-mono text-sm outline-none focus:border-primary/60"
+          className="w-full border border-border/60 bg-card/45 backdrop-blur-md px-3 py-2 font-mono text-sm outline-none focus:border-primary/60"
         />
         <div className="mt-4 space-y-2">
           {state.persons.map((p) => (
-            <div key={p.id} className="flex items-center gap-3 border border-border/50 bg-background/40 px-3 py-2">
+            <div key={p.id} className="flex items-center gap-3 border border-border/50 bg-card/45 backdrop-blur-md px-3 py-2">
               <span className="font-mono text-xs text-primary">{p.initials}</span>
               <span className="font-mono text-xs">{p.name}</span>
               <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
@@ -577,13 +595,13 @@ function TeamSettings({
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="имя"
-            className="flex-1 border border-border/60 bg-background/50 px-3 py-2 font-mono text-xs outline-none"
+            className="flex-1 border border-border/60 bg-card/45 backdrop-blur-md px-3 py-2 font-mono text-xs outline-none"
           />
           <input
             value={role}
             onChange={(e) => setRole(e.target.value)}
             placeholder="роль"
-            className="flex-1 border border-border/60 bg-background/50 px-3 py-2 font-mono text-xs outline-none"
+            className="flex-1 border border-border/60 bg-card/45 backdrop-blur-md px-3 py-2 font-mono text-xs outline-none"
           />
           <button className="glitch-clip neon-border bg-primary/90 px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-primary-foreground">
             + участник
@@ -729,7 +747,7 @@ function DealModal({
       </div>
       <div className="mt-2 space-y-1">
         {relatedTasks.map((t) => (
-          <div key={t.id} className="border border-border/50 bg-background/40 px-3 py-2 font-mono text-xs">
+          <div key={t.id} className="border border-border/50 bg-card/45 backdrop-blur-md px-3 py-2 font-mono text-xs">
             {t.title}{" "}
             <span className="text-muted-foreground">· {STATUS_META[t.status].label}</span>
           </div>
@@ -760,7 +778,7 @@ function Overlay({ children, onClose }: { children: React.ReactNode; onClose: ()
 
 function Stat({ label, value }: { label: string; value: number | string }) {
   return (
-    <div className="border border-border/50 bg-background/40 px-3 py-2">
+    <div className="border border-border/50 bg-card/45 backdrop-blur-md px-3 py-2">
       <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">{label}</div>
       <div className="font-display text-sm font-bold text-primary">{value}</div>
     </div>
