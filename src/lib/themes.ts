@@ -9,7 +9,9 @@ export type ThemeSlug =
   | "nord"
   | "ubuntu"
   | "matrix"
-  | "octo";
+  | "octo"
+  | "violet";
+
 
 export interface ThemeDef {
   slug: ThemeSlug;
