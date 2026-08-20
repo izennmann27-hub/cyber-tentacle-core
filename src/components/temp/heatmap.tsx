@@ -67,11 +67,11 @@ export function Heatmap({ tasks, personId }: { tasks: Task[]; personId: string }
         </select>
       </div>
 
-      <div className="flex w-full gap-[3px]">
+      <div className="flex flex-wrap gap-[3px]">
         {cols.map((col, ci) => (
-          <div key={ci} className="flex flex-1 flex-col gap-[3px]">
+          <div key={ci} className="flex flex-col gap-[3px]">
             {col.map((c, ri) => {
-              if (!c) return <div key={ri} className="aspect-square w-full" />;
+              if (!c) return <div key={ri} className="h-3 w-3" />;
               const doneLv = level(c.done);
               const activeLv = level(c.active);
               const isDone = doneLv > 0;
@@ -81,7 +81,7 @@ export function Heatmap({ tasks, personId }: { tasks: Task[]; personId: string }
                 <div
                   key={c.date}
                   title={`${c.date} · активность ${c.active} · выполнено ${c.done}`}
-                  className="aspect-square w-full border border-border/40"
+                  className="h-3 w-3 border border-border/40"
                   style={{
                     background:
                       alpha > 0
