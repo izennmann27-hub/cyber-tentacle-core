@@ -471,6 +471,43 @@
   --signal: #8fb4ff;
 }
 
+/* 12. VIOLET NET — 0ct0d3m0n.ru: фиолетовое матовое стекло, прямые рамки */
+:root[data-theme="violet"] {
+  --radius: 0rem;
+  --display-font: "Chakra Petch", ui-sans-serif, system-ui;
+  --mono-font: "IBM Plex Mono", ui-monospace, monospace;
+  --display-tracking: 0.22em;
+  --shape-radius: 0px;
+  --shape-clip: none;
+  --chip-clip: none;
+  --panel-blur: 18px;
+  --glow-power: 0.6;
+  --bracket-opacity: 0;
+  --scan-opacity: 0.35;
+  --border-width: 1px;
+  --background: #0d0718;
+  --foreground: #e6dcff;
+  --card: color-mix(in srgb, #1d1136 34%, transparent);
+  --card-foreground: #e6dcff;
+  --popover: #170d2b;
+  --popover-foreground: #e6dcff;
+  --primary: #c4a6ff;
+  --primary-foreground: #0d0718;
+  --secondary: #241543;
+  --secondary-foreground: #e6dcff;
+  --muted: #1a1030;
+  --muted-foreground: #8a7bb8;
+  --accent: #8b5cf6;
+  --accent-foreground: #0d0718;
+  --destructive: #ff5c7a;
+  --destructive-foreground: #ffffff;
+  --border: color-mix(in srgb, #c4a6ff 28%, transparent);
+  --input: color-mix(in srgb, #c4a6ff 14%, transparent);
+  --ring: #c4a6ff;
+  --glow: #a855f7;
+  --signal: #c4a6ff;
+}
+
 @layer base {
   :root[data-theme="octo"] body {
     background:
@@ -478,7 +515,14 @@
       radial-gradient(900px 700px at 80% 90%, #101a3d 0%, transparent 60%),
       linear-gradient(180deg, #090b18, #070812);
   }
+  :root[data-theme="violet"] body {
+    background:
+      radial-gradient(1100px 800px at 25% 15%, #2a0f52 0%, transparent 62%),
+      radial-gradient(900px 700px at 85% 95%, #43106e 0%, transparent 62%),
+      linear-gradient(180deg, #0d0718, #08040f);
+  }
 }
+
 
 @keyframes glitchShift {
   0%, 100% { transform: translateX(0); opacity: 0.5; }
@@ -541,11 +585,11 @@
   clip-path: var(--shape-clip, none);
   background: linear-gradient(
     180deg,
-    color-mix(in oklab, var(--card) 92%, transparent),
-    color-mix(in oklab, var(--background) 92%, transparent)
+    color-mix(in oklab, var(--card) 70%, transparent),
+    color-mix(in oklab, var(--background) 55%, transparent)
   );
-  border: 1px solid color-mix(in oklab, var(--primary) 30%, transparent);
-  backdrop-filter: blur(var(--panel-blur, 6px));
+  border: var(--border-width, 1px) solid color-mix(in oklab, var(--primary) 26%, transparent);
+  backdrop-filter: blur(var(--panel-blur, 6px)) saturate(140%);
 }
 @utility glitch-clip {
   clip-path: var(--chip-clip, none);
@@ -558,7 +602,7 @@
   clip-path: var(--shape-clip, none);
   background:
     radial-gradient(120% 100% at 0% 0%, color-mix(in oklab, var(--glow) 12%, transparent), transparent 60%),
-    linear-gradient(180deg, color-mix(in oklab, var(--card) 88%, transparent), color-mix(in oklab, var(--background) 96%, transparent));
+    linear-gradient(180deg, color-mix(in oklab, var(--card) 68%, transparent), color-mix(in oklab, var(--background) 55%, transparent));
   box-shadow:
     inset 0 1px 0 color-mix(in oklab, var(--primary) calc(28% * var(--glow-power, 1)), transparent),
     inset 0 0 40px color-mix(in oklab, var(--primary) calc(8% * var(--glow-power, 1)), transparent),
@@ -635,3 +679,12 @@
 .animate-sweep { animation: sweep 6s linear infinite; }
 .animate-breathe { animation: breathe 7s ease-in-out infinite; }
 .animate-fadeIn { animation: fadeIn 0.35s ease-out both; }
+
+/* Square frames + frosted glass for the 0ct0d3m0n-style themes. */
+:root[data-theme="octo"] .panel,
+:root[data-theme="octo"] .holo,
+:root[data-theme="violet"] .panel,
+:root[data-theme="violet"] .holo {
+  border-radius: 0;
+  clip-path: none;
+}
