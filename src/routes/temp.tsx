@@ -349,6 +349,7 @@ function PeopleBoard({ state }: { state: ReturnType<typeof useTempStore>["state"
   return (
     <div className="space-y-3">
       <HeatmapLegend />
+      <div className="grid gap-3 xl:grid-cols-2">
       {state.persons.map((p) => {
         const st = personStats(state.tasks, p.id);
         return (
@@ -363,7 +364,7 @@ function PeopleBoard({ state }: { state: ReturnType<typeof useTempStore>["state"
                   {p.role ?? "—"} {p.department ? `· ${p.department}` : ""}
                 </div>
               </div>
-              <div className="ml-auto grid grid-cols-4 gap-2 font-mono text-[10px] uppercase">
+              <div className="ml-auto grid grid-cols-2 gap-2 font-mono text-[10px] uppercase sm:grid-cols-4">
                 <Stat label="в работе" value={st.inProgress} />
                 <Stat label="ждёт" value={st.awaiting} />
                 <Stat label="принято" value={st.done} />
@@ -374,6 +375,7 @@ function PeopleBoard({ state }: { state: ReturnType<typeof useTempStore>["state"
           </section>
         );
       })}
+      </div>
     </div>
   );
 }
