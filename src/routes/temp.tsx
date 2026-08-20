@@ -92,9 +92,24 @@ function TempModule() {
             </span>
           </h1>
         </div>
-        <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-          {state.teamName} · {state.persons.length} чел · {state.tasks.length} задач
+        <div className="flex items-center gap-3">
+          <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+            {state.teamName} · {state.persons.length} чел · {state.tasks.length} задач
+          </div>
+          <select
+            aria-label="Тема"
+            value={theme}
+            onChange={(e) => setTheme(e.target.value as ThemeSlug)}
+            className="border border-border/60 bg-card/45 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.2em] outline-none backdrop-blur-md"
+          >
+            {THEMES.map((t) => (
+              <option key={t.slug} value={t.slug}>
+                {t.name}
+              </option>
+            ))}
+          </select>
         </div>
+
       </header>
 
       <nav className="relative z-10 flex gap-1 overflow-x-auto border-b border-border/40 px-4 md:px-8">
