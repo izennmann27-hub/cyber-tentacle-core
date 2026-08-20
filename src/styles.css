@@ -585,11 +585,11 @@
   clip-path: var(--shape-clip, none);
   background: linear-gradient(
     180deg,
-    color-mix(in oklab, var(--card) 92%, transparent),
-    color-mix(in oklab, var(--background) 92%, transparent)
+    color-mix(in oklab, var(--card) 70%, transparent),
+    color-mix(in oklab, var(--background) 55%, transparent)
   );
-  border: 1px solid color-mix(in oklab, var(--primary) 30%, transparent);
-  backdrop-filter: blur(var(--panel-blur, 6px));
+  border: var(--border-width, 1px) solid color-mix(in oklab, var(--primary) 26%, transparent);
+  backdrop-filter: blur(var(--panel-blur, 6px)) saturate(140%);
 }
 @utility glitch-clip {
   clip-path: var(--chip-clip, none);
@@ -602,7 +602,7 @@
   clip-path: var(--shape-clip, none);
   background:
     radial-gradient(120% 100% at 0% 0%, color-mix(in oklab, var(--glow) 12%, transparent), transparent 60%),
-    linear-gradient(180deg, color-mix(in oklab, var(--card) 88%, transparent), color-mix(in oklab, var(--background) 96%, transparent));
+    linear-gradient(180deg, color-mix(in oklab, var(--card) 68%, transparent), color-mix(in oklab, var(--background) 55%, transparent));
   box-shadow:
     inset 0 1px 0 color-mix(in oklab, var(--primary) calc(28% * var(--glow-power, 1)), transparent),
     inset 0 0 40px color-mix(in oklab, var(--primary) calc(8% * var(--glow-power, 1)), transparent),
@@ -679,3 +679,12 @@
 .animate-sweep { animation: sweep 6s linear infinite; }
 .animate-breathe { animation: breathe 7s ease-in-out infinite; }
 .animate-fadeIn { animation: fadeIn 0.35s ease-out both; }
+
+/* Square frames + frosted glass for the 0ct0d3m0n-style themes. */
+:root[data-theme="octo"] .panel,
+:root[data-theme="octo"] .holo,
+:root[data-theme="violet"] .panel,
+:root[data-theme="violet"] .holo {
+  border-radius: 0;
+  clip-path: none;
+}
