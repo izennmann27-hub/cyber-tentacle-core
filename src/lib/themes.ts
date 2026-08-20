@@ -34,7 +34,9 @@ export const THEMES: ThemeDef[] = [
   { slug: "ubuntu",    name: "UBUNTU TERM", tagline: "GNOME Terminal // баклажан + оранж",  fonts: "Share Tech Mono",                shape: "радиус 6px · скан-линии",                         swatch: ["#300a24", "#e95420", "#77bb41", "#e95420"] },
   { slug: "matrix",    name: "MATRIX CRT",  tagline: "Зелёный фосфор // ЭЛТ-терминал",      fonts: "Major Mono Display / Share Tech",shape: "прямые углы · CRT-скан · max glow",               swatch: ["#000b04", "#00ff62", "#b9ff3d", "#00ff62"] },
   { slug: "octo",      name: "OCTO NET",    tagline: "0ct0d3m0n // сине-фиолетовый глитч",   fonts: "Chakra Petch / IBM Plex Mono",    shape: "тонкие рамки · без радиуса · глитч-полосы",       swatch: ["#0b0d1c", "#8fb4ff", "#6f5cff", "#8fb4ff"] },
+  { slug: "violet",    name: "VIOLET NET",  tagline: "0ct0d3m0n // фиолетовое матовое стекло", fonts: "Chakra Petch / IBM Plex Mono",  shape: "прямые рамки · матовое стекло · мягкое свечение", swatch: ["#0d0718", "#c4a6ff", "#8b5cf6", "#a855f7"] },
 ];
+
 
 export const DEFAULT_THEME: ThemeSlug = "octo";
 
